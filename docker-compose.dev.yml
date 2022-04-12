@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      target: develop
+    volumes:
+      - ./web/project:/app
+    ports:
+      - 53000:3000
