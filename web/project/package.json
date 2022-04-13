@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "test -d node_modules && next dev || npm ci && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
