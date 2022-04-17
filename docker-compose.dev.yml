@@ -5,6 +5,10 @@ services:
     build:
       target: develop
     volumes:
-      - ./web/project:/app
+      - ./:/app:delegated
+    environment:
+      # コンテナ内で開発する場合でもgitが正しく動作するように
+      - GIT_DIR=/app/.git
+      - GIT_WORK_TREE=/app
     ports:
       - 53000:3000
