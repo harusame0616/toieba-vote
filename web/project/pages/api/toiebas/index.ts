@@ -6,7 +6,9 @@ import { randomUUID } from 'crypto';
 import { CustomError } from '../../../errors/custom-error';
 import { FSToiebaRepository } from '../../../domains/infrastructures/firestore/fs-toieba-repository';
 
-const toiebaCommandUsecase = new ToiebaCommandUsecase(new FSToiebaRepository());
+const toiebaCommandUsecase = new ToiebaCommandUsecase({
+  toiebaRepository: new FSToiebaRepository(),
+});
 
 /**
  *
