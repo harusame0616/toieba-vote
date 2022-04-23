@@ -1,7 +1,11 @@
-import { ToiebaCommandUsecaseService } from '../application-services/toieba-application-services';
+import crypto from 'crypto';
+import { AlreadyExistsError } from '../../errors/already-exists-error';
 import { Choice } from '../models/toieba/choice';
 import { Toieba } from '../models/toieba/toieba';
-import crypto from 'crypto';
+
+interface ToiebaCommandUsecaseConstructorParam {
+  toiebaRepository: ToiebaRepository;
+}
 
 interface ToiebaCreateParam {
   theme: string;
@@ -15,14 +19,7 @@ export interface ToiebaRepository {
 }
 
 export class ToiebaCommandUsecase {
-  private readonly _toiebaRepository: any;
-  private readonly _toiebaApplicationService;
-  constructor(toiebaRepository: any) {
-    this._toiebaRepository = toiebaRepository;
-    this._toiebaApplicationService = new ToiebaCommandUsecaseService(
-      toiebaRepository
-    );
-  }
+  constructor(private readonly param: ToiebaCommandUsecaseConstructorParam) {}
 
   async create(param: ToiebaCreateParam) {
     const toieba = new Toieba({
@@ -33,8 +30,16 @@ export class ToiebaCommandUsecase {
       ),
     });
 
-    await this._toiebaApplicationService.canCreate(toieba);
-    await this._toiebaRepository.save(toieba);
+    const duplicationToieba = await this.param.toiebaRepository.findbyId(
+      toieba.toiebaId
+    );
+    if (duplicationToieba) {
+      throw new AlreadyExistsError('といえばは既に存在しています。', {
+        toieba,
+      });
+    }
+
+    await this.param.toiebaRepository.save(toieba);
     return { toiebaId: toieba.toiebaId };
   }
 }

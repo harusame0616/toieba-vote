@@ -1,13 +1,12 @@
+import admin from 'firebase-admin';
+import '../../../api/firebase';
+import { Choice } from '../../models/toieba/choice';
 import { Toieba } from '../../models/toieba/toieba';
 import { ToiebaRepository } from '../../usecases/toieba-command-usecase';
-import admin from 'firebase-admin';
-import { Choice } from '../../models/toieba/choice';
 export const globalStore: { [key: string]: Toieba } = {};
 
 export const fsDb = admin.app('toieba').firestore();
 export class FSToiebaRepository implements ToiebaRepository {
-  store: any = {};
-  constructor() {}
   async findbyId(id: string): Promise<Toieba | undefined> {
     const snapShot = await fsDb.collection('toieba').doc(id).get();
     if (!snapShot.exists) {
@@ -23,7 +22,6 @@ export class FSToiebaRepository implements ToiebaRepository {
   }
 
   async save(toieba: Toieba): Promise<void> {
-    console.log('save');
     await fsDb
       .collection('toieba')
       .doc(toieba.toiebaId)
@@ -35,6 +33,5 @@ export class FSToiebaRepository implements ToiebaRepository {
           label: choice.label,
         })),
       });
-    console.log('saved');
   }
 }

@@ -22,9 +22,9 @@ describe('create', () => {
   let toiebaCommandUsecase: ToiebaCommandUsecase;
   let store: any = {};
   beforeEach(() => {
-    toiebaCommandUsecase = new ToiebaCommandUsecase(
-      new IMToiebaRepository(store)
-    );
+    toiebaCommandUsecase = new ToiebaCommandUsecase({
+      toiebaRepository: new IMToiebaRepository(store),
+    });
   });
 
   describe('正常系', () => {
