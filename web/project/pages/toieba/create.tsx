@@ -5,6 +5,7 @@ import DeleteButton from '../../components/case/button/DeleteButton';
 import DownButton from '../../components/case/button/DownButton';
 import UpButton from '../../components/case/button/UpButton';
 import ErrorMessage from '../../components/case/message/ErrorMessage';
+import ToiebaBand from '../../components/domain/ToiebaBand';
 import useToiebaCreation from '../../hooks/toieba/use-toieba-creation';
 import style from './create.module.scss';
 
@@ -36,7 +37,7 @@ const CreateTheme: NextPage = () => {
         return false;
       }}
     >
-      <div className={style.theme}>
+      <ToiebaBand>
         <div className={style['theme-input']}>
           <input
             type="text"
@@ -54,8 +55,7 @@ const CreateTheme: NextPage = () => {
           />
           <ErrorMessage>{themeErrorMessage}</ErrorMessage>
         </div>
-        <div>といえば・・・</div>
-      </div>
+      </ToiebaBand>
       <div className={style.choices}>
         <div className={style['choice-input']}>
           <input
