@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
-import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import SelectGroup from '../../components/base/SelectGroup';
 import SelectItem from '../../components/base/SelectItem';
 import AddButton from '../../components/case/button/AddButton';
@@ -19,39 +20,58 @@ const CreateTheme: NextPage = () => {
   const [saveErrorMessage, setSaveErrorMessage] = useState('');
   const [themeTmp, setThemeTmp] = useState('');
   const [themeErrorMessage, setThemeErrorMessage] = useState('');
+  const [isProcessing, setProcessing] = useState(false);
 
   const toieba = useToiebaCreation();
+  const history = useRouter();
 
   useEffect(() => {
     themeInputRef.current?.focus();
   }, []);
 
+  const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
+    setProcessing(true);
+    e.preventDefault();
+
+    try {
+      const { toiebaId } = await toieba.save();
+      await history.push(`/toieba/${toiebaId}/answer`);
+    } catch (err: any) {
+      setSaveErrorMessage(err.data.message);
+    }
+    setProcessing(false);
+  };
+
+  const validateTheme = () => {
+    try {
+      toieba.setTheme(themeTmp);
+      setThemeErrorMessage('');
+    } catch (err: any) {
+      setThemeErrorMessage(err.message);
+    }
+  };
+
+  const addChoiceHandler = () => {
+    choiceInputRef.current?.focus();
+    try {
+      toieba.addChoice(newChoiceLabel);
+    } catch (err: any) {
+      setAddChoiceErrorMessage(err.message);
+      return;
+    }
+
+    setAddChoiceErrorMessage('');
+    setNewChoiceLabel('');
+  };
+
   return (
-    <form
-      className={style.container}
-      onSubmit={async (e) => {
-        e.preventDefault();
-        try {
-          await toieba.save();
-        } catch (err: any) {
-          setSaveErrorMessage(err.data.message);
-        }
-        return false;
-      }}
-    >
+    <form className={style.container} onSubmit={submitHandler}>
       <ToiebaBand>
         <div className={style['theme-input']}>
           <input
             type="text"
             onChange={(e) => setThemeTmp(e.target.value)}
-            onBlur={() => {
-              try {
-                toieba.setTheme(themeTmp);
-                setThemeErrorMessage('');
-              } catch (err: any) {
-                setThemeErrorMessage(err.message);
-              }
-            }}
+            onBlur={validateTheme}
             value={themeTmp}
             ref={themeInputRef}
           />
@@ -65,28 +85,13 @@ const CreateTheme: NextPage = () => {
               ref={choiceInputRef}
               disabled={!toieba.canAddChoice}
               onChange={(e) => setNewChoiceLabel(e.target.value)}
-              minLength={1}
-              maxLength={64}
               value={newChoiceLabel}
             />
             <AddButton
               disabled={!toieba.canAddChoice}
-              onClick={() => {
-                choiceInputRef.current?.focus();
-                try {
-                  toieba.addChoice(newChoiceLabel);
-                } catch (err: any) {
-                  setAddChoiceErrorMessage(err.message);
-                  return;
-                }
-
-                setAddChoiceErrorMessage('');
-                setNewChoiceLabel('');
-              }}
+              onClick={addChoiceHandler}
             />
-            <div className={style['error-message']}>
-              {addChoiceErrorMessage}
-            </div>
+            <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
           </div>
 
           {toieba.choices.map(({ index, label }) => (
@@ -113,7 +118,7 @@ const CreateTheme: NextPage = () => {
           ))}
         </SelectGroup>
       </div>
-      <button>作成</button>
+      <button disabled={isProcessing}>作成</button>
       <ErrorMessage>{saveErrorMessage}</ErrorMessage>
     </form>
   );
