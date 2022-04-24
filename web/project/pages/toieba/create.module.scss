@@ -11,13 +11,7 @@
 
   .choices {
     margin: 40px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    width: min(100%, 640px);
-    border: 1px solid var(--color-2);
-    border-radius: 5px;
-    gap: 10px;
+    width: min(90%, 640px);
 
     .choice-input {
       display: flex;
@@ -28,46 +22,24 @@
         flex-grow: 1;
       }
     }
-    .choice {
+
+    .text {
       display: flex;
       align-items: flex-end;
-      border-bottom: var(--color-3) dashed 1px;
-      background-color: var(--color-4);
-      padding-bottom: 5px;
+      height: 100%;
+      flex-grow: 1;
+    }
 
-      .label {
-        display: flex;
-        align-items: flex-end;
-        padding-bottom: 0px;
-        flex-grow: 1;
+    .actions {
+      justify-self: flex-end;
+      flex-grow: 0;
+      flex-shrink: 0;
 
-        .index {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 25px;
-          height: 25px;
-          background: var(--color-2);
-          color: white;
-          border: solid 1px var(--color-2);
-          border-radius: 3px;
-          margin-right: 0.5rem;
-          vertical-align: bottom;
-          user-select: none;
-        }
-        .text {
-          padding-bottom: 2px;
-        }
+      .button-wrap {
+        margin: 0 2px;
       }
-      .actions {
-        flex-grow: 0;
-
-        .button-wrap {
-          margin: 0 2px;
-        }
-        .delete-wrap {
-          margin-left: 15px;
-        }
+      .delete-wrap {
+        margin-left: 15px;
       }
     }
   }

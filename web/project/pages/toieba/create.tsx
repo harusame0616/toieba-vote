@@ -1,5 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useRef, useState } from 'react';
+import SelectGroup from '../../components/base/SelectGroup';
+import SelectItem from '../../components/base/SelectItem';
 import AddButton from '../../components/case/button/AddButton';
 import DeleteButton from '../../components/case/button/DeleteButton';
 import DownButton from '../../components/case/button/DownButton';
@@ -57,59 +59,59 @@ const CreateTheme: NextPage = () => {
         </div>
       </ToiebaBand>
       <div className={style.choices}>
-        <div className={style['choice-input']}>
-          <input
-            ref={choiceInputRef}
-            disabled={!toieba.canAddChoice}
-            onChange={(e) => setNewChoiceLabel(e.target.value)}
-            minLength={1}
-            maxLength={64}
-            value={newChoiceLabel}
-          />
-          <AddButton
-            disabled={!toieba.canAddChoice}
-            onClick={() => {
-              choiceInputRef.current?.focus();
-              try {
-                toieba.addChoice(newChoiceLabel);
-              } catch (err: any) {
-                setAddChoiceErrorMessage(err.message);
-                return;
-              }
+        <SelectGroup>
+          <div className={style['choice-input']}>
+            <input
+              ref={choiceInputRef}
+              disabled={!toieba.canAddChoice}
+              onChange={(e) => setNewChoiceLabel(e.target.value)}
+              minLength={1}
+              maxLength={64}
+              value={newChoiceLabel}
+            />
+            <AddButton
+              disabled={!toieba.canAddChoice}
+              onClick={() => {
+                choiceInputRef.current?.focus();
+                try {
+                  toieba.addChoice(newChoiceLabel);
+                } catch (err: any) {
+                  setAddChoiceErrorMessage(err.message);
+                  return;
+                }
 
-              setAddChoiceErrorMessage('');
-              setNewChoiceLabel('');
-            }}
-          />
-
-          <div className={style['error-message']}>{addChoiceErrorMessage}</div>
-        </div>
-
-        {toieba.choices.map(({ index, label }) => (
-          <div className={style.choice} key={label}>
-            <div className={style.label}>
-              <div className={style.index}>{index + 1}</div>{' '}
-              <div className={style.text}>{label}</div>
-            </div>
-            <div className={style.actions}>
-              <span className={style['button-wrap']}>
-                <UpButton
-                  onClick={() => toieba.swapChoiceOrder(index, index - 1)}
-                  disabled={index == 0}
-                />
-              </span>
-              <span className={style['button-wrap']}>
-                <DownButton
-                  onClick={() => toieba.swapChoiceOrder(index, index + 1)}
-                  disabled={index == toieba.choices.length - 1}
-                />
-              </span>
-              <span className={style['delete-wrap']}>
-                <DeleteButton onClick={() => toieba.deleteChoice(index)} />
-              </span>
+                setAddChoiceErrorMessage('');
+                setNewChoiceLabel('');
+              }}
+            />
+            <div className={style['error-message']}>
+              {addChoiceErrorMessage}
             </div>
           </div>
-        ))}
+
+          {toieba.choices.map(({ index, label }) => (
+            <SelectItem key={label} index={index}>
+              <div className={style.text}>{label}</div>
+              <div className={style.actions}>
+                <span className={style['button-wrap']}>
+                  <UpButton
+                    onClick={() => toieba.swapChoiceOrder(index, index - 1)}
+                    disabled={index == 0}
+                  />
+                </span>
+                <span className={style['button-wrap']}>
+                  <DownButton
+                    onClick={() => toieba.swapChoiceOrder(index, index + 1)}
+                    disabled={index == toieba.choices.length - 1}
+                  />
+                </span>
+                <span className={style['delete-wrap']}>
+                  <DeleteButton onClick={() => toieba.deleteChoice(index)} />
+                </span>
+              </div>
+            </SelectItem>
+          ))}
+        </SelectGroup>
       </div>
       <button>作成</button>
       <ErrorMessage>{saveErrorMessage}</ErrorMessage>
