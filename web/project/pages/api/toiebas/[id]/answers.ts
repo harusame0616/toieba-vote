@@ -1,11 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { randomUUID } from 'crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { FSToiebaRepository } from '../../../domains/infrastructures/firestore/fs-toieba-repository';
-import { ToiebaCommandUsecase } from '../../../domains/usecases/toieba-command-usecase';
-import { CustomError } from '../../../errors/custom-error';
+import { FSAnswerRepository } from '../../../../domains/infrastructures/firestore/fs-answer-repository';
+import { FSToiebaRepository } from '../../../../domains/infrastructures/firestore/fs-toieba-repository';
+import { AnswerCommandUsecase } from '../../../../domains/usecases/answer-command-usecase';
+import { CustomError } from '../../../../errors/custom-error';
 
-const toiebaCommandUsecase = new ToiebaCommandUsecase({
+const answerCommandUsecase = new AnswerCommandUsecase({
+  answerRepository: new FSAnswerRepository(),
   toiebaRepository: new FSToiebaRepository(),
 });
 
@@ -24,11 +26,13 @@ export default async function handler(
 
   if (req.method == 'POST') {
     try {
-      return res
-        .status(200)
-        .send(
-          await toiebaCommandUsecase.create({ ...req.body, creatorId: userId })
-        );
+      return res.status(200).send(
+        await answerCommandUsecase.answer({
+          ...req.body,
+          toiebaId: req.query.id,
+          userId,
+        })
+      );
     } catch (err: any) {
       const error = err as CustomError;
       return res

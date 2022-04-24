@@ -1,0 +1,23 @@
+.container {
+  width: 100%;
+  min-height: 100%;
+  max-width: 100%;
+  min-width: 0px;
+  background-color: var(--color-4);
+  padding: 10% 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .choices {
+    width: min(90%, 640px);
+    margin: 40px;
+  }
+}
+
+.error-message {
+  width: 100%;
+  color: red;
+  height: 1rem;
+  font-size: 12px;
+}

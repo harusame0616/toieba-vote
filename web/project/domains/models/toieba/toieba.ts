@@ -98,4 +98,8 @@ export class Toieba {
   get choices() {
     return this._choices;
   }
+
+  hasChoice(choiceId: string) {
+    return this._choices.map(({ choiceId }) => choiceId).includes(choiceId);
+  }
 }
