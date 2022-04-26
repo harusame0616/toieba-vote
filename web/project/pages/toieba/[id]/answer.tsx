@@ -1,5 +1,6 @@
 import type { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
+import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
 import SelectGroup from '../../../components/base/SelectGroup';
@@ -51,6 +52,11 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
 
   const toieba = prop.toieba;
   const { answer } = useToiebaAnswer({ toiebaId: toieba.toiebaId });
+  const router = useRouter();
+  const answerHandler = async (choiceId: string) => {
+    await answer(choiceId);
+    router.push(`/toieba/${toieba.toiebaId}/total`);
+  };
 
   return (
     <div className={style.container}>
@@ -60,7 +66,7 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
           {toieba?.choices?.map?.(({ label, choiceId }, index) => (
             <SelectItem
               index={index}
-              onClick={() => answer(choiceId)}
+              onClick={() => answerHandler(choiceId)}
               key={label}
             >
               {label}

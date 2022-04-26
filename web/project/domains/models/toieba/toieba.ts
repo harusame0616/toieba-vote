@@ -42,6 +42,7 @@ export class Toieba {
         { choices }
       );
     }
+
     if (choices.length > Toieba.CHOICE_MAX_NUMBER) {
       throw new ParameterError(
         `選択肢は${Toieba.CHOICE_MAX_NUMBER}個以下である必要があります。`,

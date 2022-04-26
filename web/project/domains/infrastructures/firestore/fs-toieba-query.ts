@@ -1,4 +1,5 @@
 import admin from 'firebase-admin';
+import '../../../api/firebase';
 import { NotFoundError } from '../../../errors/not-found-error';
 import { ToiebaDto, ToiebaQuery } from '../../usecases/toieba-query-usecase';
 

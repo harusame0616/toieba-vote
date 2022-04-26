@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 const instance = axios.create({
   baseURL:
     typeof window === 'undefined'
@@ -15,9 +15,9 @@ const post = async (url: string, data?: any) => {
   }
 };
 
-const get = async (url: string) => {
+const get = async (url: string, config?: AxiosRequestConfig) => {
   try {
-    return await instance.get(url);
+    return await instance.get(url, config);
   } catch (err: any) {
     throw err.response ?? err;
   }
