@@ -10,7 +10,7 @@ body {
 }
 
 a {
-  color: inherit;
+  color: var(--color-3);
   text-decoration: none;
 }
 
@@ -32,4 +32,5 @@ a {
   --color-2: #393e46;
   --color-3: #00adb5;
   --color-4: #eee;
+  --color-5: rgb(58, 128, 156);
 }

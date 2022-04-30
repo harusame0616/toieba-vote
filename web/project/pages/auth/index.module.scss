@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .login-card-wrap {
+    width: 100%;
+    margin-bottom: 34px;
+  }
+}
