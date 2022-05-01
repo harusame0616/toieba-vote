@@ -6,10 +6,15 @@ const instance = axios.create({
       : 'http://localhost:53000',
 });
 instance.defaults.headers.common['Content-Type'] = 'Application/json';
+const headers = {
+  Authorization: '',
+};
 
 const post = async (url: string, data?: any) => {
   try {
-    return await instance.post(url, data);
+    return await instance.post(url, data, {
+      headers,
+    });
   } catch (err: any) {
     throw err.response ?? err;
   }
@@ -17,13 +22,21 @@ const post = async (url: string, data?: any) => {
 
 const get = async (url: string, config?: AxiosRequestConfig) => {
   try {
-    return await instance.get(url, config);
+    return await instance.get(url, {
+      headers,
+      ...config,
+    });
   } catch (err: any) {
     throw err.response ?? err;
   }
 };
 
+const setAuthorization = (token?: string) => {
+  headers.Authorization = token ?? '';
+};
+
 export const http = {
   post,
   get,
+  setAuthorization,
 };

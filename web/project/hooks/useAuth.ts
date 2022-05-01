@@ -53,13 +53,16 @@ export const useAuth = () => {
     });
   };
 
-  const restoreAuth = () => {
+  const restoreAuth = (callback?: (user: AuthUser) => Promise<any> | void) => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      setAuthUser({
+      const authUser = {
         id: user?.uid,
         displayName: user?.displayName ?? undefined,
         token: await user?.getIdToken(),
-      });
+      };
+
+      setAuthUser(authUser);
+      await callback?.(authUser);
 
       unsubscribe();
     });

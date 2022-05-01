@@ -5,6 +5,10 @@ import { FSAnswerRepository } from '../../../../domains/infrastructures/firestor
 import { FSToiebaRepository } from '../../../../domains/infrastructures/firestore/fs-toieba-repository';
 import { AnswerCommandUsecase } from '../../../../domains/usecases/answer-command-usecase';
 import { CustomError } from '../../../../errors/custom-error';
+import {
+  authenticate,
+  getOrCreateUserId,
+} from '../../../../library/server-side-lib';
 
 const answerCommandUsecase = new AnswerCommandUsecase({
   answerRepository: new FSAnswerRepository(),
@@ -21,11 +25,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<{}>
 ) {
-  // ToDo: ユーザー認証によりuserId取得
-  const userId = randomUUID();
-
   if (req.method == 'POST') {
     try {
+      const userId = await getOrCreateUserId(
+        await authenticate(req.headers.authorization)
+      );
+
       return res.status(200).send(
         await answerCommandUsecase.answer({
           ...req.body,
