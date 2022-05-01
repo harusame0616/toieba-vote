@@ -21,6 +21,4 @@ export default async function handler(
         .send(await toiebaQueryUsecase.getDetail(toiebaId as string));
     },
   });
-
-  return res.status(400).send({});
 }
