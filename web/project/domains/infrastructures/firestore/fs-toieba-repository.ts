@@ -32,6 +32,8 @@ export class FSToiebaRepository implements ToiebaRepository {
           choiceId: choice.choiceId,
           label: choice.label,
         })),
+        createdAt: new Date(),
+        voteCount: 0,
       });
   }
 }

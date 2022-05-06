@@ -1,8 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next';
 import '../../../api/firebase';
+import { FSToiebaQuery } from '../../../domains/infrastructures/firestore/fs-toieba-query';
 import { FSToiebaRepository } from '../../../domains/infrastructures/firestore/fs-toieba-repository';
 import { ToiebaCommandUsecase } from '../../../domains/usecases/toieba-command-usecase';
+import {
+  ToiebaBriefDto,
+  ToiebaQueryUsecase,
+} from '../../../domains/usecases/toieba-query-usecase';
 import {
   authenticate,
   getOrCreateUserId,
@@ -11,6 +16,10 @@ import {
 
 const toiebaCommandUsecase = new ToiebaCommandUsecase({
   toiebaRepository: new FSToiebaRepository(),
+});
+
+const toiebaQueryUsecase = new ToiebaQueryUsecase({
+  toiebaQuery: new FSToiebaQuery(),
 });
 
 export default async function handler(
@@ -29,6 +38,22 @@ export default async function handler(
           creatorId: userId,
         })
       );
+    },
+    GET: async () => {
+      const { latest, popular } = req.query;
+
+      let list: ToiebaBriefDto[] = [];
+      if (latest) {
+        list = await toiebaQueryUsecase.latestList(parseInt(latest as string));
+      } else if (popular) {
+        list = await toiebaQueryUsecase.popularList(
+          parseInt(popular as string)
+        );
+      } else {
+        // do nothing
+      }
+
+      return res.status(200).send(list);
     },
   });
 }

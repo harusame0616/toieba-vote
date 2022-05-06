@@ -1,5 +1,6 @@
 import admin from 'firebase-admin';
 import '../../../api/firebase';
+import { NotFoundError } from '../../../errors/not-found-error';
 import { Answer } from '../../models/answer/answer';
 import { Toieba } from '../../models/toieba/toieba';
 import {
@@ -43,16 +44,29 @@ export class FSAnswerRepository implements AnswerRepository {
   }
 
   async save(answer: Answer): Promise<void> {
-    await fsDb
-      .collection('toieba')
-      .doc(answer.toiebaId)
-      .collection('answers')
-      .doc(answer.answerId)
-      .set({
+    await fsDb.runTransaction(async (transaction) => {
+      const toiebaDoc = fsDb.collection('toieba').doc(answer.toiebaId);
+      const answerDoc = toiebaDoc.collection('answers').doc(answer.answerId);
+
+      const answerSnapShot = await answerDoc.get();
+      if (!answerSnapShot.exists) {
+        const toiebaSnapShot = await transaction.get(toiebaDoc);
+        const toiebaDto = toiebaSnapShot.data();
+        if (!toiebaDto) {
+          throw new NotFoundError('といえばが見つかりません。', answer);
+        }
+
+        transaction.update(toiebaDoc, {
+          voteCount: (toiebaDto.voteCount as number) + 1,
+        });
+      }
+
+      answerDoc.set({
         toiebaId: answer.toiebaId,
         answerId: answer.answerId,
         choiceId: answer.choiceId,
         userId: answer.userId,
       });
+    });
   }
 }

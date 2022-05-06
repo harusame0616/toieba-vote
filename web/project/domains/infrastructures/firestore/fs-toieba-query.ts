@@ -1,7 +1,11 @@
 import admin from 'firebase-admin';
 import '../../../api/firebase';
 import { NotFoundError } from '../../../errors/not-found-error';
-import { ToiebaDto, ToiebaQuery } from '../../usecases/toieba-query-usecase';
+import {
+  ToiebaBriefDto,
+  ToiebaDto,
+  ToiebaQuery,
+} from '../../usecases/toieba-query-usecase';
 
 export const fsDb = admin.app('toieba').firestore();
 
@@ -15,4 +19,37 @@ export class FSToiebaQuery implements ToiebaQuery {
 
     return { ...data, toiebaId: snapShot.id } as ToiebaDto;
   }
+
+  async latestList(count: number): Promise<ToiebaBriefDto[]> {
+    const snapShot = await fsDb
+      .collection('toieba')
+      .orderBy('createdAt', 'desc')
+      .limit(count)
+      .get();
+
+    return snapShot.docs.map((doc: any) => {
+      const toieba = doc.data();
+      return {
+        toiebaId: doc.id,
+        theme: toieba.theme,
+      };
+    });
+  }
+
+  async popularList(count: number): Promise<ToiebaBriefDto[]> {
+    const snapShot = await fsDb
+      .collection('toieba')
+      .orderBy('voteCount', 'desc')
+      .limit(count)
+      .get();
+
+    return snapShot.docs.map((doc: any) => {
+      const toieba = doc.data();
+      return {
+        toiebaId: doc.id,
+        theme: toieba.theme,
+      };
+    });
+  }
+
 }

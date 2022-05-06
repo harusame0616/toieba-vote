@@ -16,7 +16,6 @@ import useToiebaAnswer from '../../../hooks/toieba/use-toieba-answer';
 import style from './answer.module.scss';
 
 const api = new NJAPIToiebaApi();
-
 type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
 interface QueryParam extends ParsedUrlQuery {
   id: string;

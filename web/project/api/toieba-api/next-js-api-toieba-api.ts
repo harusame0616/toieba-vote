@@ -1,4 +1,7 @@
-import { ToiebaDto } from '../../domains/usecases/toieba-query-usecase';
+import {
+  ToiebaBriefDto,
+  ToiebaDto,
+} from '../../domains/usecases/toieba-query-usecase';
 import { http } from '../../library/http';
 import {
   ToiebaAnswerApiParam,
@@ -28,6 +31,16 @@ export class NJAPIToiebaApi implements ToiebaApi {
     let res;
     res = await http.get(`/api/toiebas/${id}`);
 
+    return res.data;
+  }
+
+  async getLatest(): Promise<ToiebaBriefDto[]> {
+    const res = await http.get(`/api/toiebas?latest=5`);
+    return res.data;
+  }
+
+  async getPopular(): Promise<ToiebaBriefDto[]> {
+    const res = await http.get(`/api/toiebas?popular=5`);
     return res.data;
   }
 }
