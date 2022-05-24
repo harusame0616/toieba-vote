@@ -2,8 +2,8 @@ import axios, { AxiosRequestConfig } from 'axios';
 const instance = axios.create({
   baseURL:
     typeof window === 'undefined'
-      ? 'http://localhost:3000'
-      : 'http://localhost:53000',
+      ? `http://localhost:${process.env.PORT ?? 3000}`
+      : location.origin,
 });
 instance.defaults.headers.common['Content-Type'] = 'Application/json';
 const headers = {
