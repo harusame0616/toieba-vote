@@ -1,0 +1,9 @@
+.container {
+  display: block;
+
+  .logo {
+    width: 100%;
+    height: auto;
+    vertical-align: bottom; // 画像下の隙間対策
+  }
+}

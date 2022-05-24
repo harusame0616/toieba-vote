@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: 34px;
+  border-bottom: var(--color-3) dashed 1px;
+  padding-bottom: 5px;
+  cursor: pointer;
+
+  .index {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    background: var(--color-2);
+    color: white;
+    border: solid 1px var(--color-2);
+    border-radius: 3px;
+    margin-right: 0.5rem;
+    vertical-align: bottom;
+    user-select: none;
+  }
+
+  .label {
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 2px;
+    flex-grow: 1;
+  }
+}

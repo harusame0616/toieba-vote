@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  .header {
+    flex-grow: 0;
+    flex-shrink: 0;
+    display: flex;
+    height: 80px;
+    padding: 5px 40px;
+    background: var(--color-4);
+
+    .logo {
+      flex-grow: 1;
+
+      .logo-wrap {
+        width: 200px;
+      }
+    }
+
+    .action {
+      flex-grow: 0;
+      flex-shrink: 0;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+    }
+  }
+
+  .main {
+    flex-grow: 1;
+    flex-shrink: 0;
+
+    display: flex;
+    & > * {
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+  }
+}
