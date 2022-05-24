@@ -59,7 +59,7 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
       <div className={style.choices}>
         <SelectGroup>
           {choices.map((choice: any, index: number) => (
-            <SelectItem index={index}>
+            <SelectItem index={index} key={choice.id}>
               <div className={style.label}>
                 <div className={style.text}>{choice.label} </div>
                 <div className={style.info}>

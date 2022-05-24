@@ -9,13 +9,13 @@ const Auth = () => {
   const router = useRouter();
   const auth = useContext(AuthContext);
 
+  useEffect(() => {
+    auth?.getOAuthRedirectResult?.(() => router.push('/'));
+  }, []);
+
   if (!auth) {
     return <div>loading</div>;
   }
-
-  useEffect(() => {
-    auth.getOAuthRedirectResult(() => router.push('/'));
-  }, []);
 
   if (auth.isLoading) {
     return <div>loading</div>;

@@ -46,7 +46,8 @@ export const getServerSideProps: GetServerSideProps<
 
 const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
   if (isServerSideErrorProps(prop)) {
-    return <Error statusCode={prop.error.status} />;
+    // ToDo: ServerSideError時の処理
+    throw <Error statusCode={prop.error.status} />;
   }
 
   const toieba = prop.toieba;

@@ -56,7 +56,7 @@ const Home: NextPage<ServerSideProps> = (props) => {
       </h1>
       <div>
         {menu.map((item) => (
-          <div className={ style.menu}>
+          <div className={style.menu} key={item.label}>
             <h2 className={style['menu-label']}>{item.label}</h2>
             {item.list.map((toieba) => (
               <div key={toieba.toiebaId}>

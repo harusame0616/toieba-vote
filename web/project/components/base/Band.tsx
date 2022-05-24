@@ -1,5 +1,5 @@
 import { DetailedHTMLProps, HTMLAttributes } from 'react';
-import style from './band.module.scss';
+import style from './Band.module.scss';
 
 const Band = ({
   children,
