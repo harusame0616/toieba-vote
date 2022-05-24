@@ -4,3 +4,5 @@ services:
   web:
     build:
       context: ./web
+    environment:
+      FIREBASE_API_KEY: ${FIREBASE_API_KEY}
