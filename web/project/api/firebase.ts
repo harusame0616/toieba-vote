@@ -1,12 +1,23 @@
 import admin, { credential } from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 
-if (!process.env.FIREBASE_ADMIN_KEY) {
-  throw new Error('Require Env: FIREBASE_ADMIN_KEY');
-}
-const key = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
+const appConfig = (() => {
+  if (process.env.NODE_ENV === 'production') {
+    let key;
+    try {
+      key = JSON.parse(process.env.FIREBASE_ADMIN_KEY!);
+    } catch {
+      throw new Error('Invalid Setting: FIREBASE_ADMIN_KEY');
+    }
+    return {
+      credential: credential.cert(key),
+    };
+  } else {
+    return { projectId: 'demo-project' };
+  }
+})();
 
 // Initialize Firebase
 if (!admin.apps.length) {
-  initializeApp({ credential: credential.cert(key) }, 'toieba');
+  initializeApp(appConfig, 'toieba');
 }

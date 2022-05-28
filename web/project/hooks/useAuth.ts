@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import {
+  connectAuthEmulator,
   getAuth,
   getRedirectResult,
   GoogleAuthProvider,
@@ -14,15 +15,36 @@ interface AuthUser {
   token?: string;
 }
 
-const firebaseApp = initializeApp(require('/firebase.config.json'));
+const appConfig = (() => {
+  return process.env.NODE_ENV === 'production'
+    ? require('/firebase.config.json')
+    : {
+        apiKey: 'dev-api-key',
+        authDomain: 'dev-auth-domain',
+        projectId: 'demo-project',
+      };
+})();
+
+const firebaseApp = initializeApp(appConfig);
+
 const providerMap = {
   Google: GoogleAuthProvider,
   Twitter: TwitterAuthProvider,
 };
 
+let auth = (() => {
+  if (process.env.NODE_ENV === 'production') {
+    return getAuth(firebaseApp);
+  } else {
+    const auth = getAuth();
+    connectAuthEmulator(auth, 'http://localhost:9099');
+    return auth;
+  }
+})();
+
 type ProviderName = keyof typeof providerMap;
+
 export const useAuth = () => {
-  const auth = getAuth(firebaseApp);
   const [user, setAuthUser] = useState<AuthUser>({
     id: undefined,
     displayName: undefined,
