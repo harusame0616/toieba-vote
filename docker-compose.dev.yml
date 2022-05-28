@@ -10,5 +10,17 @@ services:
       # コンテナ内で開発する場合でもgitが正しく動作するように
       - GIT_DIR=/app/.git
       - GIT_WORK_TREE=/app
+      - FIRESTORE_EMULATOR_HOST=firebase:8080 # Firestore 接続先
+      - FIREBASE_AUTH_EMULATOR_HOST=firebase:9099 # Fireauth 接続先
     ports:
       - 53000:3000
+  firebase:
+    build:
+      context: ./firebase
+    volumes:
+      - ./firebase/workspace:/workspace
+    command: ['--project', 'demo-project', '--only', 'firestore,auth']
+    ports:
+      - 4000:4000 # Emulator Suite UI
+      - 8080:8080 # firestore
+      - 9099:9099 # auth

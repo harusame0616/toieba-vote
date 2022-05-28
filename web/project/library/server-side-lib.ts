@@ -21,6 +21,7 @@ export const authenticate = async (token?: string) => {
   try {
     ({ uid } = await admin.app('toieba').auth().verifyIdToken(token));
   } catch (err) {
+    console.error(err);
     throw new UnauthorizedError(
       '認証コードが不正です。再ログインしてください。'
     );
