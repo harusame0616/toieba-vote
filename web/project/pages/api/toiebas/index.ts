@@ -8,11 +8,8 @@ import {
   ToiebaBriefDto,
   ToiebaQueryUsecase,
 } from '../../../domains/usecases/toieba-query-usecase';
-import {
-  authenticate,
-  getOrCreateUserId,
-  requestHandler,
-} from '../../../library/server-side-lib';
+import { PermissionError } from '../../../errors/permission-error';
+import { requestHandler } from '../../../library/server-side-lib';
 
 const toiebaCommandUsecase = new ToiebaCommandUsecase({
   toiebaRepository: new FSToiebaRepository(),
@@ -27,15 +24,14 @@ export default async function handler(
   res: NextApiResponse<{}>
 ) {
   await requestHandler(req, res, {
-    POST: async () => {
-      const userId = await getOrCreateUserId(
-        await authenticate(req.headers.authorization)
-      );
-
+    POST: async ({ user }) => {
+      if (!user) {
+        throw new PermissionError('ユーザー登録が必要です。');
+      }
       res.status(200).send(
         await toiebaCommandUsecase.create({
           ...req.body,
-          creatorId: userId,
+          creatorId: user.userId,
         })
       );
     },

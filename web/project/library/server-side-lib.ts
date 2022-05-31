@@ -1,16 +1,15 @@
 import admin from 'firebase-admin';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { FSUserQuery } from '../domains/infrastructures/firestore/fs-user-query';
-import { FSUserRepository } from '../domains/infrastructures/firestore/fs-user-repository';
-import { UserCommandUsecase } from '../domains/usecases/user-command-usecase';
-import { UserQueryUsecase } from '../domains/usecases/user-query-usecase';
+import {
+  UserDto,
+  UserQueryUsecase,
+} from '../domains/usecases/user-query-usecase';
 import { CustomError } from '../errors/custom-error';
+import { NotFoundError } from '../errors/not-found-error';
 import { UnauthorizedError } from '../errors/unauthorized-error';
 
 const userQueryUsecase = new UserQueryUsecase({ userQuery: new FSUserQuery() });
-const userCommandUsecase = new UserCommandUsecase({
-  userRepository: new FSUserRepository(),
-});
 
 export const authenticate = async (token?: string) => {
   if (!token) {
@@ -26,22 +25,21 @@ export const authenticate = async (token?: string) => {
       '認証コードが不正です。再ログインしてください。'
     );
   }
-  return uid;
-};
 
-export const getOrCreateUserId = async (uid: string) => {
-  let userId;
   try {
-    ({ userId } = await userQueryUsecase.queryWithFirebaseUid(uid));
+    return await userQueryUsecase.queryWithFirebaseUid(uid);
   } catch (err) {
-    const user = await admin.app('toieba').auth().getUser(uid);
-    ({ userId } = await userCommandUsecase.createFromFirebase(user));
+    throw new NotFoundError('ユーザーが見つかりませんでした。');
   }
-
-  return userId;
 };
 
-type handler = () => Promise<void> | void;
+interface HandlerParam {
+  isAuthenticated: boolean;
+  isRegistered: boolean;
+  user?: UserDto;
+  firebaseUid?: string;
+}
+type handler = (param: HandlerParam) => Promise<void> | void;
 const methods = ['POST', 'GET', 'PUT', 'DELETE'] as const;
 type Method = typeof methods[number];
 
@@ -72,7 +70,33 @@ export const requestHandler = async (
   }
 
   try {
-    await handler();
+    let uid;
+    let user;
+    if (req.headers.authorization) {
+      try {
+        ({ uid } = await admin
+          .app('toieba')
+          .auth()
+          .verifyIdToken(req.headers.authorization));
+      } catch (err) {
+        console.error(err);
+        throw new UnauthorizedError(
+          '認証コードが不正です。再ログインしてください。'
+        );
+      }
+
+      try {
+        user = await userQueryUsecase.queryWithFirebaseUid(uid);
+      } catch (err) {
+        // do nothing
+      }
+    }
+    await handler({
+      isAuthenticated: !!uid,
+      isRegistered: !!user,
+      firebaseUid: uid,
+      user,
+    });
   } catch (err: any) {
     console.error(err);
     const error = err as CustomError;
