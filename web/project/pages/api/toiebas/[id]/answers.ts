@@ -3,9 +3,9 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { FSAnswerRepository } from '../../../../domains/infrastructures/firestore/fs-answer-repository';
 import { FSToiebaRepository } from '../../../../domains/infrastructures/firestore/fs-toieba-repository';
 import { AnswerCommandUsecase } from '../../../../domains/usecases/answer-command-usecase';
+import { PermissionError } from '../../../../errors/permission-error';
 import {
   authenticate,
-  getOrCreateUserId,
   requestHandler,
 } from '../../../../library/server-side-lib';
 
@@ -19,16 +19,16 @@ export default async function handler(
   res: NextApiResponse<{}>
 ) {
   await requestHandler(req, res, {
-    POST: async () => {
-      const userId = await getOrCreateUserId(
-        await authenticate(req.headers.authorization)
-      );
+    POST: async ({ user }) => {
+      if (!user) {
+        throw new PermissionError('ユーザー登録が必要です。');
+      }
 
       res.status(200).send(
         await answerCommandUsecase.answer({
           ...req.body,
           toiebaId: req.query.id,
-          userId,
+          userId: user.userId,
         })
       );
     },
