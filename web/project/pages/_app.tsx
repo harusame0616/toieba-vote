@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
 import { UserApi } from '../api/user-api';
 import { NJAPIUserApi } from '../api/user-api/next-js-api-user-api';
+import UserMenu from '../components/domain/UserMenu';
 import ServiceLogo from '../components/domain/ServiceLogo';
 import { UserDto } from '../domains/usecases/user-query-usecase';
 import { useAuth } from '../hooks/useAuth';
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [loggedInUser, setLoggedInUser] = useState<UserDto | undefined>(
     undefined
   );
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   useEffect(() => {
     if (auth.isLoggedIn()) {
@@ -44,7 +46,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AuthContext.Provider value={auth}>
-      <div className={style.container}>
+      <div className={style.container} onClick={() => setMenuIsOpen(false)}>
         <header className={style.header}>
           <div className={style.logo}>
             <div className={style['logo-wrap']}>
@@ -62,12 +64,25 @@ function MyApp({ Component, pageProps }: AppProps) {
               質問を作成する
             </button>
             {auth?.isLoggedIn() ? (
-              <button>{loggedInUser?.name ?? ''}</button>
+              <div className={style['user-wrap']}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMenuIsOpen(true);
+                  }}
+                >
+                  {loggedInUser?.name ?? ''}
+                </button>
+                <div className={style['menu-wrap']}>
+                  {menuIsOpen ? <UserMenu /> : null}
+                </div>
+              </div>
             ) : (
               <button onClick={() => router.push('/auth')}>ログイン</button>
             )}
           </div>
         </header>
+
         <main className={style.main}>
           <Component {...pageProps} />
         </main>
