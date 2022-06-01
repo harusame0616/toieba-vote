@@ -6,6 +6,7 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   TwitterAuthProvider,
+  signOut,
 } from 'firebase/auth';
 import { useState } from 'react';
 
@@ -92,6 +93,10 @@ export const useAuth = () => {
 
   const isLoggedIn = () => !!user.id;
 
+  const logout = async () => {
+    await signOut(auth);
+  };
+
   return {
     loginWithOAuth,
     getOAuthRedirectResult,
@@ -99,6 +104,7 @@ export const useAuth = () => {
     restoreAuth,
     user,
     isLoading,
+    logout,
   };
 };
 

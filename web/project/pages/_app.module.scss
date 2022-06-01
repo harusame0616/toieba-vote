@@ -25,6 +25,17 @@
       align-items: center;
 
       gap: 10px;
+
+      .user-wrap {
+        position: relative;
+
+        .menu-wrap {
+          top: 10px;
+          position: absolute;
+          width: 240px;
+          right: 0px;
+        }
+      }
     }
   }
 
