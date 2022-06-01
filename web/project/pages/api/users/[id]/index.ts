@@ -22,7 +22,9 @@ export default async function handler(
       }
 
       if (type === 'firebaseUid') {
-        res.status(200).send(await userQueryUsecase.queryWithFirebaseUid(id));
+        return res
+          .status(200)
+          .send(await userQueryUsecase.queryWithFirebaseUid(id));
       }
 
       throw new ParameterError('IDのタイプが不正です', { type });
