@@ -27,6 +27,10 @@ export default async function handler(
           .send(await userQueryUsecase.queryWithFirebaseUid(id));
       }
 
+      if (type === 'userId') {
+        return res.status(200).send(await userQueryUsecase.queryWithUserId(id));
+      }
+
       throw new ParameterError('IDのタイプが不正です', { type });
     },
   });

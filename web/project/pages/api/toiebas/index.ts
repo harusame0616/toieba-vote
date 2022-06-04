@@ -8,6 +8,7 @@ import {
   ToiebaBriefDto,
   ToiebaQueryUsecase,
 } from '../../../domains/usecases/toieba-query-usecase';
+import { ParameterError } from '../../../errors/parameter-error';
 import { PermissionError } from '../../../errors/permission-error';
 import { requestHandler } from '../../../library/server-side-lib';
 
@@ -36,7 +37,7 @@ export default async function handler(
       );
     },
     GET: async () => {
-      const { latest, popular } = req.query;
+      const { latest, popular, answered, userId } = req.query;
 
       let list: ToiebaBriefDto[] = [];
       if (latest) {
@@ -45,6 +46,15 @@ export default async function handler(
         list = await toiebaQueryUsecase.popularList(
           parseInt(popular as string)
         );
+      } else if (answered && typeof answered === 'string') {
+        if (!userId || typeof userId !== 'string') {
+          throw new ParameterError('ユーザーIDが不正です', req.query);
+        }
+
+        list = await toiebaQueryUsecase.listOfAnsweredByUser({
+          count: parseInt(answered),
+          userId,
+        });
       } else {
         // do nothing
       }

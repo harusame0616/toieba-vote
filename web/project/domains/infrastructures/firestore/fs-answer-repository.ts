@@ -2,7 +2,6 @@ import admin from 'firebase-admin';
 import '../../../api/firebase';
 import { NotFoundError } from '../../../errors/not-found-error';
 import { Answer } from '../../models/answer/answer';
-import { Toieba } from '../../models/toieba/toieba';
 import {
   AnswerRepository,
   FindByUserIdParam,

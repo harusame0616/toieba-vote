@@ -2,6 +2,7 @@ import admin from 'firebase-admin';
 import '../../../api/firebase';
 import { NotFoundError } from '../../../errors/not-found-error';
 import {
+  AnsweredByUserParam,
   ToiebaBriefDto,
   ToiebaDto,
   ToiebaQuery,
@@ -52,4 +53,30 @@ export class FSToiebaQuery implements ToiebaQuery {
     });
   }
 
+  async listOfAnsweredByUser({
+    userId,
+    count,
+  }: AnsweredByUserParam): Promise<ToiebaBriefDto[]> {
+    const answerSnapshots = await fsDb
+      .collectionGroup('answers')
+      .where('userId', '==', userId)
+      .get();
+
+    const answeredToiebaIds = answerSnapshots.docs.map(
+      (answer) => answer.data().toiebaId
+    );
+    if (!answeredToiebaIds.length) {
+      return [];
+    }
+
+    const toiebaSnapshots = await fsDb
+      .collection('toieba')
+      .where(admin.firestore.FieldPath.documentId(), 'in', answeredToiebaIds)
+      .get();
+
+    return toiebaSnapshots.docs.map((doc) => ({
+      toiebaId: doc.id,
+      theme: doc.data().theme,
+    }));
+  }
 }
