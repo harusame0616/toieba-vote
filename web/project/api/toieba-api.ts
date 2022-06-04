@@ -15,10 +15,15 @@ export interface ToiebaAnswerApiParam {
   choiceId: string;
 }
 
+export interface ToiebaGetAnsweredApiParam {
+  userId: string;
+}
+
 export interface ToiebaApi {
   create(param: ToiebaCreateApiParam): Promise<{ toiebaId: string }>;
   answer(param: ToiebaAnswerApiParam): Promise<{ answerId: string }>;
   getDetail(param: { id: string }): Promise<ToiebaDto>;
   getLatest(): Promise<ToiebaBriefDto[]>;
   getPopular(): Promise<ToiebaBriefDto[]>;
+  getAnswered(param: ToiebaGetAnsweredApiParam): Promise<ToiebaBriefDto[]>;
 }

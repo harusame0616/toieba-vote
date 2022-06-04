@@ -7,6 +7,7 @@ import {
   ToiebaAnswerApiParam,
   ToiebaApi,
   ToiebaCreateApiParam,
+  ToiebaGetAnsweredApiParam,
 } from '../toieba-api';
 
 export class NJAPIToiebaApi implements ToiebaApi {
@@ -41,6 +42,18 @@ export class NJAPIToiebaApi implements ToiebaApi {
 
   async getPopular(): Promise<ToiebaBriefDto[]> {
     const res = await http.get(`/api/toiebas?popular=5`);
+    return res.data;
+  }
+
+  async getAnswered({
+    userId,
+  }: ToiebaGetAnsweredApiParam): Promise<ToiebaBriefDto[]> {
+    const res = await http.get(`/api/toiebas`, {
+      params: {
+        userId,
+        answered: 5,
+      },
+    });
     return res.data;
   }
 }

@@ -14,10 +14,16 @@ export interface ToiebaBriefDto {
   theme: string;
 }
 
+export interface AnsweredByUserParam {
+  userId: string;
+  count: number;
+}
+
 export interface ToiebaQuery {
   getDetail(toiebaId: string): Promise<ToiebaDto>;
   latestList(count: number): Promise<ToiebaBriefDto[]>;
   popularList(count: number): Promise<ToiebaBriefDto[]>;
+  listOfAnsweredByUser(param: AnsweredByUserParam): Promise<ToiebaBriefDto[]>;
 }
 
 interface ToiebaQueryUsecaseConstructorParam {
@@ -37,5 +43,9 @@ export class ToiebaQueryUsecase {
 
   async popularList(count: number) {
     return await this.param.toiebaQuery.popularList(count);
+  }
+
+  async listOfAnsweredByUser(param: AnsweredByUserParam) {
+    return await this.param.toiebaQuery.listOfAnsweredByUser(param);
   }
 }

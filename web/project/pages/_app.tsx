@@ -63,7 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             >
               質問を作成する
             </button>
-            {auth?.isLoggedIn() ? (
+            {loggedInUser ? (
               <div className={style['user-wrap']}>
                 <button
                   onClick={(e) => {
@@ -71,10 +71,12 @@ function MyApp({ Component, pageProps }: AppProps) {
                     setMenuIsOpen(true);
                   }}
                 >
-                  {loggedInUser?.name ?? ''}
+                  {loggedInUser.name ?? ''}
                 </button>
                 <div className={style['menu-wrap']}>
-                  {menuIsOpen ? <UserMenu /> : null}
+                  {menuIsOpen ? (
+                    <UserMenu userId={loggedInUser.userId} />
+                  ) : null}
                 </div>
               </div>
             ) : (
