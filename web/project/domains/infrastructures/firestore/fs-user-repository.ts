@@ -11,6 +11,7 @@ export class FSUserRepository implements UserRepository {
     await fsDb.collection('users').doc(user.userId).set({
       name: user.name,
       firebaseUid: user.firebaseUid,
+      comment: user.comment,
     });
   }
 
