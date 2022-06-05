@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  min-width: 65px;
+  overflow: hidden;
+
+  .icon {
+    margin-right: 5px;
+  }
+
+  .count-wrap {
+    position: relative;
+
+    .count {
+      position: absolute;
+      flex-grow: 1;
+      display: flex;
+      justify-content: right;
+
+      transition: all 0.5s;
+      &.upper {
+        &.active {
+          transform: translate(0, 0);
+        }
+        &.inactive {
+          transform: translate(0, -120%);
+        }
+      }
+      &.current {
+        &.active {
+          transform: translate(0, 0);
+        }
+        &.inactive {
+          transform: translate(0, 120%);
+        }
+      }
+    }
+  }
+
+  cursor: pointer;
+}
