@@ -1,0 +1,72 @@
+.container {
+  z-index: 999;
+  position: fixed;
+  top: 0;
+  background: rgba($color: #000000, $alpha: 0.4);
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+
+  .dialog {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    border: 0px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+    height: 100%;
+    width: 100%;
+    max-height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--color-4);
+    box-shadow: 3px 3px 9px black;
+
+    overscroll-behavior: contain;
+
+    .title {
+      display: flex;
+      align-items: center;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      border: 0px;
+      background: var(--color-5);
+      color: white;
+      font-weight: bold;
+      padding: 10px;
+    }
+
+    .body {
+      flex-grow: 1;
+      padding: 10px;
+    }
+
+    .action {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 10px 10px;
+      gap: 10px;
+
+      button {
+        width: 90px;
+        cursor: pointer;
+        border-radius: 2px;
+        box-shadow: 1px 1px 2px black;
+
+        &.ok {
+          background: var(--color-5);
+          color: white;
+          border: solid 1px var(--color-5);
+        }
+
+        &.cancel {
+          border: solid 1px var(--color-5);
+          background: var(--color-4);
+          color: var(--color-5);
+        }
+      }
+    }
+  }
+}

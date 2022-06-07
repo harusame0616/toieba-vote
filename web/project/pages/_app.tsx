@@ -15,15 +15,20 @@ export const AuthContext = createContext<
   ReturnType<typeof useAuth> | undefined
 >(undefined);
 
+export const LoggedInUserContext = createContext<UserDto | { userId: null }>({
+  userId: null,
+});
+
 const userApi: UserApi = new NJAPIUserApi();
 
 function MyApp({ Component, pageProps }: AppProps) {
   const auth = useAuth();
   const router = useRouter();
-  const [loggedInUser, setLoggedInUser] = useState<UserDto | undefined>(
-    undefined
-  );
+  const [loggedInUser, setLoggedInUser] = useState<UserDto | { userId: null }>({
+    userId: null,
+  });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (auth.isLoggedIn()) {
@@ -41,54 +46,59 @@ function MyApp({ Component, pageProps }: AppProps) {
           );
         }
       }
+      setIsLoading(false);
     });
-  }, [auth, router]);
+  }, []);
 
-  return (
+  return isLoading ? (
+    <div />
+  ) : (
     <AuthContext.Provider value={auth}>
-      <div className={style.container} onClick={() => setMenuIsOpen(false)}>
-        <header className={style.header}>
-          <div className={style.logo}>
-            <div className={style['logo-wrap']}>
-              <ServiceLogo />
-            </div>
-          </div>
-          <div className={style.action}>
-            <button
-              onClick={() => {
-                return router.push(
-                  auth.isLoggedIn() ? '/toieba/create' : '/auth'
-                );
-              }}
-            >
-              質問を作成する
-            </button>
-            {loggedInUser ? (
-              <div className={style['user-wrap']}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setMenuIsOpen(true);
-                  }}
-                >
-                  {loggedInUser.name ?? ''}
-                </button>
-                <div className={style['menu-wrap']}>
-                  {menuIsOpen ? (
-                    <UserMenu userId={loggedInUser.userId} />
-                  ) : null}
-                </div>
+      <LoggedInUserContext.Provider value={loggedInUser}>
+        <div className={style.container} onClick={() => setMenuIsOpen(false)}>
+          <header className={style.header}>
+            <div className={style.logo}>
+              <div className={style['logo-wrap']}>
+                <ServiceLogo />
               </div>
-            ) : (
-              <button onClick={() => router.push('/auth')}>ログイン</button>
-            )}
-          </div>
-        </header>
+            </div>
+            <div className={style.action}>
+              <button
+                onClick={() => {
+                  return router.push(
+                    auth.isLoggedIn() ? '/toieba/create' : '/auth'
+                  );
+                }}
+              >
+                質問を作成する
+              </button>
+              {loggedInUser.userId ? (
+                <div className={style['user-wrap']}>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setMenuIsOpen(true);
+                    }}
+                  >
+                    {loggedInUser.name ?? ''}
+                  </button>
+                  <div className={style['menu-wrap']}>
+                    {menuIsOpen ? (
+                      <UserMenu userId={loggedInUser.userId} />
+                    ) : null}
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => router.push('/auth')}>ログイン</button>
+              )}
+            </div>
+          </header>
 
-        <main className={style.main}>
-          <Component {...pageProps} />
-        </main>
-      </div>
+          <main className={style.main}>
+            <Component {...pageProps} />
+          </main>
+        </div>
+      </LoggedInUserContext.Provider>
     </AuthContext.Provider>
   );
 }
