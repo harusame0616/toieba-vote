@@ -153,7 +153,6 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
         {commentList.length
           ? commentList.map((comment) => (
               <div className={style.comment} key={comment.commentId}>
-                {comment.commentId}
                 <div className={style['comment-header']}>
                   <div className={style.name}>
                     <Link href={`/user/${comment.userId}`}>
