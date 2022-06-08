@@ -87,6 +87,11 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
   });
   const { likeComment, unlikeComment } = useCommentLike();
 
+  const loggedInUser = useContext(LoggedInUserContext);
+  const goToAuth = () => {
+    router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
+  };
+
   useEffect(() => {
     refreshCommentList();
   }, []);
@@ -119,7 +124,17 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
 
       <Band id="comment">コメント</Band>
       <div className={style['comment-list']}>
-        <button onClick={() => setCommentDialog(true)}>コメントする</button>
+        <button
+          onClick={() => {
+            if (loggedInUser.userId) {
+              setCommentDialog(true);
+            } else {
+              goToAuth();
+            }
+          }}
+        >
+          コメントする
+        </button>
         <Dialog
           title="コメントする"
           open={commentDialog}
@@ -170,7 +185,11 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
                 <div className={style['comment-footer']}>
                   <LikeButton
                     onLike={async () => {
-                      await likeComment(comment.commentId);
+                      if (loggedInUser.userId) {
+                        await likeComment(comment.commentId);
+                      } else {
+                        goToAuth();
+                      }
                     }}
                     onUnlike={async () => {
                       await unlikeComment(comment.commentId);

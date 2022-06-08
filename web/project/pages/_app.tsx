@@ -41,9 +41,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         try {
           setLoggedInUser(await userApi.getUser({ firebaseUid: user.id }));
         } catch (err) {
-          router.push(
-            `/user/create?name=${user.displayName}&firebaseUid=${user.id}`
-          );
+          const [_, queryString] = router.asPath.split('?');
+          const to = new URLSearchParams(queryString).get('to');
+          router.push({
+            pathname: '/user/create',
+            query: { name: user.displayName, firebaseUid: user.id, to },
+          });
         }
       }
       setIsLoading(false);
@@ -65,8 +68,12 @@ function MyApp({ Component, pageProps }: AppProps) {
             <div className={style.action}>
               <button
                 onClick={() => {
+                  const toiebaCreatePath = '/toieba/create';
+
                   return router.push(
-                    auth.isLoggedIn() ? '/toieba/create' : '/auth'
+                    auth.isLoggedIn()
+                      ? toiebaCreatePath
+                      : `/auth?to=${encodeURIComponent(toiebaCreatePath)}`
                   );
                 }}
               >

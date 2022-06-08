@@ -17,7 +17,10 @@ const CreateUser: NextPage = () => {
       return;
     }
 
-    location.href = '/';
+    location.href =
+      typeof router.query.to === 'string' && router.query.to.length
+        ? decodeURIComponent(router.query.to)
+        : '/';
   };
 
   useEffect(() => {
