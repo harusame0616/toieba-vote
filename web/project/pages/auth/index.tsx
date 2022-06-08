@@ -10,7 +10,11 @@ const Auth = () => {
   const auth = useContext(AuthContext);
 
   useEffect(() => {
-    auth?.getOAuthRedirectResult?.(() => router.push('/'));
+    const toUrl =
+      typeof router.query.to === 'string'
+        ? decodeURIComponent(router.query.to)
+        : '/';
+    auth?.getOAuthRedirectResult?.(() => router.push(toUrl));
   }, []);
 
   if (!auth) {

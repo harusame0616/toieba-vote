@@ -2,6 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
+import { useContext } from 'react';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
 import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
@@ -13,6 +14,7 @@ import {
   toServerSideError,
 } from '../../../errors/server-side-error';
 import useToiebaAnswer from '../../../hooks/toieba/use-toieba-answer';
+import { LoggedInUserContext } from '../../_app';
 import style from './answer.module.scss';
 
 const api = new NJAPIToiebaApi();
@@ -45,6 +47,8 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
+  const loggedInUser = useContext(LoggedInUserContext);
+
   if (isServerSideErrorProps(prop)) {
     // ToDo: ServerSideError時の処理
     throw <Error statusCode={prop.error.status} />;
@@ -54,6 +58,9 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
   const { answer } = useToiebaAnswer({ toiebaId: toieba.toiebaId });
   const router = useRouter();
   const answerHandler = async (choiceId: string) => {
+    if (!loggedInUser.userId) {
+      return router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
+    }
     await answer(choiceId);
     router.push(`/toieba/${toieba.toiebaId}/total`);
   };
