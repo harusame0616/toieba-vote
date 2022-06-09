@@ -8,6 +8,7 @@ import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
 import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ToiebaDto } from '../../../domains/usecases/toieba-query-usecase';
+import Head from 'next/head';
 import {
   isServerSideErrorProps,
   ServerSideErrorProps,
@@ -67,6 +68,12 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
 
   return (
     <div className={style.container}>
+      <Head>
+        <title>
+          {' '}
+          {toieba.theme}といえばの投票 - 連想投稿SNS！といえばボート{' '}
+        </title>
+      </Head>
       <ToiebaBand>{toieba?.theme}</ToiebaBand>
       <div className={style.choices}>
         <SelectGroup>

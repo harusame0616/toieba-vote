@@ -11,6 +11,7 @@ import ErrorMessage from '../../components/case/error/ErrorMessage';
 import ToiebaBand from '../../components/domain/toieba/ToiebaBand';
 import useToiebaCreation from '../../hooks/toieba/use-toieba-creation';
 import style from './create.module.scss';
+import Head from 'next/head';
 
 const CreateTheme: NextPage = () => {
   const themeInputRef = useRef<HTMLInputElement>(null);
@@ -66,6 +67,10 @@ const CreateTheme: NextPage = () => {
 
   return (
     <form className={style.container} onSubmit={submitHandler}>
+      <Head>
+        <title>といえば投稿 - 連想投稿SNS！といえばボート</title>
+        <meta name="robots" content="noindex" key="robots" />
+      </Head>
       <ToiebaBand>
         <div className={style['theme-input']}>
           <input

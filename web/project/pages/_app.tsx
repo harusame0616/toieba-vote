@@ -1,4 +1,5 @@
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
 import { UserApi } from '../api/user-api';
@@ -60,6 +61,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AuthContext.Provider value={auth}>
       <LoggedInUserContext.Provider value={loggedInUser}>
+        <Head>
+          <title>連想投稿SNS！といえばボート</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+        </Head>
         <div
           className={style.container}
           onClick={() => setUserMenuIsOpen(false)}

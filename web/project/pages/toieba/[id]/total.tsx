@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
@@ -104,6 +105,9 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
 
   return (
     <div className={style.container}>
+      <Head>
+        <title>{theme}といえばの集計結果 - 連想投稿SNS！といえばボート</title>
+      </Head>
       <ToiebaBand>{theme}</ToiebaBand>
       <div className={style['choices-wrap']}>
         <div className={style.choices}>
