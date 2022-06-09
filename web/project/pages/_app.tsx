@@ -28,7 +28,6 @@ function MyApp({ Component, pageProps }: AppProps) {
     userId: null,
   });
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (auth.isLoggedIn()) {
@@ -49,13 +48,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           });
         }
       }
-      setIsLoading(false);
     });
   }, []);
 
-  return isLoading ? (
-    <div />
-  ) : (
+  return (
     <AuthContext.Provider value={auth}>
       <LoggedInUserContext.Provider value={loggedInUser}>
         <div className={style.container} onClick={() => setMenuIsOpen(false)}>
