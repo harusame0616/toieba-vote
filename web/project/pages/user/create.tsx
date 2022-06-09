@@ -2,7 +2,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import Band from '../../components/base/Band';
-import ErrorMessage from '../../components/case/message/ErrorMessage';
+import ErrorMessage from '../../components/case/error/ErrorMessage';
 import useUserCreation from '../../hooks/user/use-user-creation';
 import style from './create.module.scss';
 

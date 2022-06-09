@@ -1,5 +1,5 @@
 import { ButtonHTMLAttributes } from 'react';
-import RoundButton from '../../base/button/RoundButton';
+import RoundButton from '../../base/RoundButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 

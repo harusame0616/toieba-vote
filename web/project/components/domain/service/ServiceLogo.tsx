@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import style from './ServiceLogo.module.scss';
 
 const ServiceLogo = () => {

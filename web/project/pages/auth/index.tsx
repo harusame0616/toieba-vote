@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
-import LoginCard from '../../components/case/card/LoginCard';
+import LoginCard from '../../components/case/login/LoginCard';
 import { AuthContext } from '../_app';
 import style from './index.module.scss';
 

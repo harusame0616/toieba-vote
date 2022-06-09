@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import Band from '../base/Band';
+import Band from '../../base/Band';
 
 interface Prop {
   children: ReactNode;

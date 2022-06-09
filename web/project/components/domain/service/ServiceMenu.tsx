@@ -1,7 +1,7 @@
-import ServiceLogo from '../ServiceLogo';
-import style from './ServiceMenu.module.scss';
-import UserMenu from '../UserMenu';
 import { Dispatch, SetStateAction } from 'react';
+import UserMenu from '../user/UserMenu';
+import ServiceLogo from './ServiceLogo';
+import style from './ServiceMenu.module.scss';
 
 type User =
   | {

@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
 import Link from 'next/link';
 import { NJAPIToiebaApi } from '../api/toieba-api/next-js-api-toieba-api';
-import ServiceLogo from '../components/domain/ServiceLogo';
+import ServiceLogo from '../components/domain/service/ServiceLogo';
 import { ToiebaBriefDto } from '../domains/usecases/toieba-query-usecase';
 import {
   isServerSideErrorProps,

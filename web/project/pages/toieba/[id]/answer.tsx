@@ -6,7 +6,7 @@ import { useContext } from 'react';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
 import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
-import ToiebaBand from '../../../components/domain/ToiebaBand';
+import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ToiebaDto } from '../../../domains/usecases/toieba-query-usecase';
 import {
   isServerSideErrorProps,

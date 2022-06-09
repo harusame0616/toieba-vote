@@ -12,9 +12,9 @@ import Band from '../../../components/base/Band';
 import Dialog from '../../../components/base/Dialog';
 import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
-import ErrorMessage from '../../../components/case/message/ErrorMessage';
-import LikeButton from '../../../components/domain/button/LikeButton';
-import ToiebaBand from '../../../components/domain/ToiebaBand';
+import ErrorMessage from '../../../components/case/error/ErrorMessage';
+import LikeButton from '../../../components/domain/like/LikeButton';
+import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ParameterError } from '../../../errors/parameter-error';
 import {
   isServerSideErrorProps,
