@@ -1,7 +1,8 @@
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect } from 'react';
-import LoginCard from '../../components/case/card/LoginCard';
+import LoginCard from '../../components/case/login/LoginCard';
 import { AuthContext } from '../_app';
 import style from './index.module.scss';
 
@@ -27,6 +28,10 @@ const Auth = () => {
 
   return (
     <div className={style.container}>
+      <Head>
+        <title>ログイン - 連想投稿SNS！といえばボート</title>
+        <meta name="robots" content="noindex" key="robots" />
+      </Head>
       <div className={style['login-card-wrap']}>
         <LoginCard login={auth.loginWithOAuth} />
       </div>

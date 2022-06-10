@@ -1,22 +1,28 @@
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { createContext, useEffect, useState } from 'react';
 import { UserApi } from '../api/user-api';
 import { NJAPIUserApi } from '../api/user-api/next-js-api-user-api';
-import UserMenu from '../components/domain/UserMenu';
-import ServiceLogo from '../components/domain/ServiceLogo';
+import ServiceMenu from '../components/domain/service/ServiceMenu';
 import { UserDto } from '../domains/usecases/user-query-usecase';
 import { useAuth } from '../hooks/useAuth';
 import { http } from '../library/http';
 import '../styles/globals.css';
 import style from './_app.module.scss';
 
+interface NoLoggedInUser {
+  userId: null;
+  name: null;
+}
+
 export const AuthContext = createContext<
   ReturnType<typeof useAuth> | undefined
 >(undefined);
 
-export const LoggedInUserContext = createContext<UserDto | { userId: null }>({
+export const LoggedInUserContext = createContext<UserDto | NoLoggedInUser>({
   userId: null,
+  name: null,
 });
 
 const userApi: UserApi = new NJAPIUserApi();
@@ -24,11 +30,11 @@ const userApi: UserApi = new NJAPIUserApi();
 function MyApp({ Component, pageProps }: AppProps) {
   const auth = useAuth();
   const router = useRouter();
-  const [loggedInUser, setLoggedInUser] = useState<UserDto | { userId: null }>({
+  const [loggedInUser, setLoggedInUser] = useState<UserDto | NoLoggedInUser>({
     userId: null,
+    name: null,
   });
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [userMenuIsOpen, setUserMenuIsOpen] = useState(false);
 
   useEffect(() => {
     if (auth.isLoggedIn()) {
@@ -49,57 +55,37 @@ function MyApp({ Component, pageProps }: AppProps) {
           });
         }
       }
-      setIsLoading(false);
     });
   }, []);
 
-  return isLoading ? (
-    <div />
-  ) : (
+  return (
     <AuthContext.Provider value={auth}>
       <LoggedInUserContext.Provider value={loggedInUser}>
-        <div className={style.container} onClick={() => setMenuIsOpen(false)}>
-          <header className={style.header}>
-            <div className={style.logo}>
-              <div className={style['logo-wrap']}>
-                <ServiceLogo />
-              </div>
-            </div>
-            <div className={style.action}>
-              <button
-                onClick={() => {
-                  const toiebaCreatePath = '/toieba/create';
+        <Head>
+          <title>連想投稿SNS！といえばボート</title>
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
+        </Head>
+        <div
+          className={style.container}
+          onClick={() => setUserMenuIsOpen(false)}
+        >
+          <ServiceMenu
+            user={loggedInUser}
+            menuState={[userMenuIsOpen, setUserMenuIsOpen]}
+            onLogin={() => router.push('/auth')}
+            onToiebaCreate={() => {
+              const toiebaCreatePath = '/toieba/create';
 
-                  return router.push(
-                    auth.isLoggedIn()
-                      ? toiebaCreatePath
-                      : `/auth?to=${encodeURIComponent(toiebaCreatePath)}`
-                  );
-                }}
-              >
-                質問を作成する
-              </button>
-              {loggedInUser.userId ? (
-                <div className={style['user-wrap']}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setMenuIsOpen(true);
-                    }}
-                  >
-                    {loggedInUser.name ?? ''}
-                  </button>
-                  <div className={style['menu-wrap']}>
-                    {menuIsOpen ? (
-                      <UserMenu userId={loggedInUser.userId} />
-                    ) : null}
-                  </div>
-                </div>
-              ) : (
-                <button onClick={() => router.push('/auth')}>ログイン</button>
-              )}
-            </div>
-          </header>
+              router.push(
+                auth.isLoggedIn()
+                  ? toiebaCreatePath
+                  : `/auth?to=${encodeURIComponent(toiebaCreatePath)}`
+              );
+            }}
+          />
 
           <main className={style.main}>
             <Component {...pageProps} />

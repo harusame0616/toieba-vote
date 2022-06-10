@@ -3,14 +3,15 @@ import { useRouter } from 'next/router';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import SelectGroup from '../../components/base/SelectGroup';
 import SelectItem from '../../components/base/SelectItem';
-import AddButton from '../../components/case/button/AddButton';
-import DeleteButton from '../../components/case/button/DeleteButton';
-import DownButton from '../../components/case/button/DownButton';
-import UpButton from '../../components/case/button/UpButton';
-import ErrorMessage from '../../components/case/message/ErrorMessage';
-import ToiebaBand from '../../components/domain/ToiebaBand';
+import AddButton from '../../components/case/add/AddButton';
+import DeleteButton from '../../components/case/delete/DeleteButton';
+import DownButton from '../../components/case/down/DownButton';
+import UpButton from '../../components/case/up/UpButton';
+import ErrorMessage from '../../components/case/error/ErrorMessage';
+import ToiebaBand from '../../components/domain/toieba/ToiebaBand';
 import useToiebaCreation from '../../hooks/toieba/use-toieba-creation';
 import style from './create.module.scss';
+import Head from 'next/head';
 
 const CreateTheme: NextPage = () => {
   const themeInputRef = useRef<HTMLInputElement>(null);
@@ -66,6 +67,10 @@ const CreateTheme: NextPage = () => {
 
   return (
     <form className={style.container} onSubmit={submitHandler}>
+      <Head>
+        <title>といえば投稿 - 連想投稿SNS！といえばボート</title>
+        <meta name="robots" content="noindex" key="robots" />
+      </Head>
       <ToiebaBand>
         <div className={style['theme-input']}>
           <input

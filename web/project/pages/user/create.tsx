@@ -1,8 +1,9 @@
 import { NextPage } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import Band from '../../components/base/Band';
-import ErrorMessage from '../../components/case/message/ErrorMessage';
+import ErrorMessage from '../../components/case/error/ErrorMessage';
 import useUserCreation from '../../hooks/user/use-user-creation';
 import style from './create.module.scss';
 
@@ -38,6 +39,10 @@ const CreateUser: NextPage = () => {
 
   return (
     <div className={style.container}>
+      <Head>
+        <title>プロフィール登録 - 連想投稿SNS！といえばボート</title>
+        <meta name="robots" content="noindex" key="robots" />
+      </Head>
       <Band>
         <div className={style['items-wrap']}>
           <div className={style.item}>

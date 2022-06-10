@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
@@ -60,6 +61,11 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
   const { user, answeredToiebaList } = props;
   return (
     <div className={style.container}>
+      <Head>
+        <title>
+          {user.name}さんのプロフィール - 連想投稿SNS！といえばボート
+        </title>
+      </Head>
       <div className={style.profile}>
         <div className={style.name}>{user.name}</div>
         <div className={style.comment}>{user.comment}</div>

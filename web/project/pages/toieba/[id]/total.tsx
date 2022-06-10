@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
+import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
@@ -12,9 +13,9 @@ import Band from '../../../components/base/Band';
 import Dialog from '../../../components/base/Dialog';
 import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
-import ErrorMessage from '../../../components/case/message/ErrorMessage';
-import LikeButton from '../../../components/domain/button/LikeButton';
-import ToiebaBand from '../../../components/domain/ToiebaBand';
+import ErrorMessage from '../../../components/case/error/ErrorMessage';
+import LikeButton from '../../../components/domain/like/LikeButton';
+import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ParameterError } from '../../../errors/parameter-error';
 import {
   isServerSideErrorProps,
@@ -104,6 +105,9 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
 
   return (
     <div className={style.container}>
+      <Head>
+        <title>{theme}といえばの集計結果 - 連想投稿SNS！といえばボート</title>
+      </Head>
       <ToiebaBand>{theme}</ToiebaBand>
       <div className={style['choices-wrap']}>
         <div className={style.choices}>
