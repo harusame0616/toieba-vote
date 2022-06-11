@@ -1,11 +1,14 @@
 import crypto from 'crypto';
 import { ParameterError } from '../../../errors/parameter-error';
 
-interface UserConstructorParam {
+export interface UserProfile {
+  name: string;
+  comment: string;
+}
+
+interface UserConstructorParam extends UserProfile {
   userId: string;
   firebaseUid: string;
-  name: string;
-  comment?: string;
 }
 
 export type CreateUserParam = Omit<UserConstructorParam, 'userId'>;
@@ -30,7 +33,7 @@ export class User {
     this.userId = userId;
     this.firebaseUid = firebaseUid;
     this.name = name;
-    this.comment = comment ?? '';
+    this.comment = comment;
   }
 
   static create(param: CreateUserParam) {

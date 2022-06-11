@@ -11,6 +11,9 @@
     padding: 10px;
 
     .name {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       font-size: 2rem;
       padding-bottom: 2px;
       border-bottom: 1px solid black;

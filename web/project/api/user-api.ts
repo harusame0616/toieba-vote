@@ -1,5 +1,7 @@
-import { CreateUserParam } from '../domains/models/user/user';
+import { CreateUserParam, UserProfile } from '../domains/models/user/user';
 import { UserDto } from '../domains/usecases/user-query-usecase';
+
+export type { UserProfile };
 
 interface GetUserParamByUserId {
   userId: string;
@@ -21,4 +23,5 @@ export const isGetUserParamByFirebaseId = (
 export interface UserApi {
   getUser(param: GetUserParam): Promise<UserDto>;
   createUser(param: Omit<CreateUserParam, 'firebaseUid'>): Promise<void>;
+  editProfile(userId: string, profile: UserProfile): Promise<void>;
 }

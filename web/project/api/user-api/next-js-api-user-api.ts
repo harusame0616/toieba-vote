@@ -6,6 +6,7 @@ import {
   GetUserParam,
   isGetUserParamByFirebaseId,
   isGetUserParamByUserId,
+  UserProfile,
   UserApi,
 } from '../user-api';
 
@@ -31,6 +32,11 @@ export class NJAPIUserApi implements UserApi {
 
     const res = await http.get(`/api/users/${id}?type=${type}`);
 
+    return res.data ?? null;
+  }
+
+  async editProfile(userId: string, profile: UserProfile): Promise<void> {
+    const res = await http.put(`/api/users/${userId}`, { params: profile });
     return res.data ?? null;
   }
 }

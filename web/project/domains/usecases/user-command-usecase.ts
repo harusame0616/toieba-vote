@@ -1,5 +1,6 @@
 import { AlreadyExistsError } from '../../errors/already-exists-error';
-import { CreateUserParam, User } from '../models/user/user';
+import { NotFoundError } from '../../errors/not-found-error';
+import { CreateUserParam, User, UserProfile } from '../models/user/user';
 
 export interface UserDto {
   userId: string;
@@ -13,8 +14,9 @@ export interface FirebaseUserInfoDto {
 }
 
 export interface UserRepository {
-  save(user: User): Promise<void>;
+  findOneByUserId(userId: string): Promise<User | null>;
   findOneByFirebaseUid(firebaseUid: string): Promise<User | null>;
+  save(user: User): Promise<void>;
 }
 
 interface UserCommandUsecaseConstructorParam {
@@ -34,5 +36,18 @@ export class UserCommandUsecase {
 
     const newUser = User.create(param);
     await this.param.userRepository.save(newUser);
+  }
+
+  async editProfile(userId: string, profile: UserProfile) {
+    const user = await this.param.userRepository.findOneByUserId(userId);
+
+    if (!user) {
+      throw new NotFoundError('ユーザーが見つかりません。', { userId });
+    }
+
+    user.name = profile.name;
+    user.comment = profile.comment;
+
+    await this.param.userRepository.save(user);
   }
 }

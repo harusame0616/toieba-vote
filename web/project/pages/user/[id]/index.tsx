@@ -3,15 +3,18 @@ import Error from 'next/error';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
 import { NJAPIUserApi } from '../../../api/user-api/next-js-api-user-api';
 import Band from '../../../components/base/Band';
+import UserEditButton from '../../../components/domain/user/UserEditButton';
 import { ToiebaBriefDto } from '../../../domains/usecases/toieba-query-usecase';
 import { UserDto } from '../../../domains/usecases/user-query-usecase';
 import {
   isServerSideErrorProps,
   ServerSideErrorProps,
 } from '../../../errors/server-side-error';
+import { LoggedInUserContext } from '../../_app';
 import style from './index.module.scss';
 
 interface ServerSideSuccessProps {
@@ -53,10 +56,20 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 
 const UserPage: NextPage<ServerSideProps> = (props) => {
   const router = useRouter();
+  const loggedInUser = useContext(LoggedInUserContext);
+  const [canEditProfile, setCanEditProfile] = useState(false);
+
+  useEffect(() => {
+    setCanEditProfile(router.query.id === loggedInUser.userId);
+  }, [loggedInUser.userId, router.query.id]);
 
   if (isServerSideErrorProps(props)) {
     return <Error statusCode={props.error.status} />;
   }
+
+  const goToProfileEdit = () => {
+    router.push(`/user/${user.userId}/edit`);
+  };
 
   const { user, answeredToiebaList } = props;
   return (
@@ -67,7 +80,10 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
         </title>
       </Head>
       <div className={style.profile}>
-        <div className={style.name}>{user.name}</div>
+        <div className={style.name}>
+          {user.name}
+          {canEditProfile ? <UserEditButton onClick={goToProfileEdit} /> : null}
+        </div>
         <div className={style.comment}>{user.comment}</div>
       </div>
       <Band>回答済みの「といえば」</Band>

@@ -1,9 +1,9 @@
 import { ButtonHTMLAttributes } from 'react';
 import style from './SquareButton.module.scss';
 
-interface Prop extends ButtonHTMLAttributes<HTMLButtonElement> {
-  background: string;
-  color: string;
+export interface SquareButtonProp extends ButtonHTMLAttributes<HTMLButtonElement> {
+  background?: string;
+  color?: string;
 }
 
 const SquareButton = ({
@@ -12,7 +12,7 @@ const SquareButton = ({
   type = 'button',
   children,
   ...rest
-}: Prop) => {
+}: SquareButtonProp) => {
   return (
     <button
       {...rest}
