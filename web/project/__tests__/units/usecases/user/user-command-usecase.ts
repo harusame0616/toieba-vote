@@ -1,14 +1,18 @@
+import crypto from 'crypto';
+import {
+  AuthenticationId,
+  AuthenticationType,
+  User,
+} from '../../../../domains/models/user/user';
 import {
   UserCommandUsecase,
   UserRepository,
 } from '../../../../domains/usecases/user-command-usecase';
-import crypto from 'crypto';
-import { User } from '../../../../domains/models/user/user';
 
 class TestUserRepository implements UserRepository {
   users = {} as { [key: string]: User };
   async save(user: User): Promise<void> {
-    this.users[user.firebaseUid] = user;
+    this.users[user.authenticationId.id] = user;
   }
 
   async findOneByUserId(userId: string): Promise<User | null> {
@@ -16,8 +20,10 @@ class TestUserRepository implements UserRepository {
       Object.values(this.users).find((user) => user.userId === userId) ?? null
     );
   }
-  async findOneByFirebaseUid(firebaseUid: string): Promise<User | null> {
-    return this.users[firebaseUid] ?? null;
+  async findOneByAuthenticationId(
+    authenticationId: AuthenticationId
+  ): Promise<User | null> {
+    return this.users[authenticationId.id] ?? null;
   }
 
   init() {
@@ -27,6 +33,10 @@ class TestUserRepository implements UserRepository {
 
 const NAME_MAX_LENGTH = 64;
 const COMMENT_MAX_LENGTH = 255;
+const authenticationId = {
+  id: crypto.randomUUID(),
+  type: 'firebase' as AuthenticationType,
+};
 describe('createUser', () => {
   describe('正常系', () => {
     let userRepository: TestUserRepository;
@@ -42,27 +52,23 @@ describe('createUser', () => {
     const maxLengthName = 'a'.repeat(NAME_MAX_LENGTH);
     const minLengthComment = '';
     const maxLengthComment = 'a'.repeat(COMMENT_MAX_LENGTH);
-    const firebaseUid = crypto.randomUUID();
 
     it.each([
-      { name: minLengthName, comment: minLengthComment, firebaseUid },
-      { name: maxLengthName, comment: maxLengthComment, firebaseUid },
+      { name: minLengthName, comment: minLengthComment },
+      { name: maxLengthName, comment: maxLengthComment },
     ])('ユーザーが作成できる', async ({ name, comment }) => {
-      await userCommandUsecase.createUser({
-        name,
-        comment,
-        firebaseUid,
-      });
-      const user = userRepository.users[firebaseUid];
+      await userCommandUsecase.createUser({ name, comment }, authenticationId);
+
+      const user = userRepository.users[authenticationId.id];
       expect({
         name: user.name,
         comment: user.comment,
-        firebaseUid: user.firebaseUid,
-        userId: user.firebaseUid,
+        authenticationId: user.authenticationId,
+        userId: user.userId,
       }).toEqual({
         name,
         comment,
-        firebaseUid,
+        authenticationId: expect.objectContaining(authenticationId),
         userId: expect.anything(),
       });
     });
@@ -86,11 +92,7 @@ describe('createUser', () => {
       ],
     ])('名前のバリデーションエラー', async (name, errorMessage) => {
       await expect(
-        userCommandUsecase.createUser({
-          name,
-          comment: '',
-          firebaseUid: crypto.randomUUID(),
-        })
+        userCommandUsecase.createUser({ name, comment: '' }, authenticationId)
       ).rejects.toThrow(errorMessage);
     });
 
@@ -101,28 +103,24 @@ describe('createUser', () => {
       ],
     ])('コメントのバリデーションエラー', async (comment, errorMessage) => {
       await expect(
-        userCommandUsecase.createUser({
-          name: 'a',
-          comment,
-          firebaseUid: crypto.randomUUID(),
-        })
+        userCommandUsecase.createUser({ name: 'a', comment }, authenticationId)
       ).rejects.toThrow(errorMessage);
     });
 
     it('同一Firebase Uidでの再登録エラー', async () => {
-      const firebaseUid = crypto.randomUUID();
+      await userCommandUsecase.createUser(
+        { name: 'a', comment: '' },
+        authenticationId
+      );
 
-      await userCommandUsecase.createUser({
-        name: 'a',
-        comment: '',
-        firebaseUid,
-      });
       await expect(
-        userCommandUsecase.createUser({
-          name: 'a',
-          comment: '',
-          firebaseUid,
-        })
+        userCommandUsecase.createUser(
+          {
+            name: 'a',
+            comment: '',
+          },
+          authenticationId
+        )
       ).rejects.toThrow('登録済みのユーザーです。');
     });
   });
@@ -133,28 +131,26 @@ describe('editProfile', () => {
   const userCommandUsecase = new UserCommandUsecase({
     userRepository,
   });
-  const firebaseUid = crypto.randomUUID();
 
   let createdUserDto: {
     userId: string;
-    firebaseUid: string;
     comment: string;
     name: string;
+    authenticationId: AuthenticationId;
   };
   beforeEach(async () => {
     userRepository.init();
 
-    await userCommandUsecase.createUser({
-      name: 'name',
-      comment: 'comment',
-      firebaseUid,
-    });
-    const user = userRepository.users[firebaseUid];
+    await userCommandUsecase.createUser(
+      { name: 'name', comment: 'comment' },
+      authenticationId
+    );
+    const user = userRepository.users[authenticationId.id];
     createdUserDto = {
       userId: user.userId,
-      firebaseUid: user.firebaseUid,
       comment: user.comment,
       name: user.name,
+      authenticationId: user.authenticationId,
     };
   });
 
@@ -167,15 +163,17 @@ describe('editProfile', () => {
         name,
         comment,
       });
-      const editedUser = userRepository.users[createdUserDto.firebaseUid];
+      const editedUser =
+        userRepository.users[createdUserDto.authenticationId.id];
 
       expect({
         userId: editedUser.userId,
-        firebaseUid: editedUser.firebaseUid,
         name: editedUser.name,
         comment: editedUser.comment,
+        authenticationId: editedUser.authenticationId,
       }).toEqual({
         ...createdUserDto,
+        authenticationId: expect.objectContaining(editedUser.authenticationId),
         name,
         comment,
       });
@@ -185,17 +183,17 @@ describe('editProfile', () => {
     beforeEach(async () => {
       userRepository.init();
 
-      await userCommandUsecase.createUser({
-        name: 'name',
-        comment: 'comment',
-        firebaseUid,
-      });
-      const user = userRepository.users[firebaseUid];
+      await userCommandUsecase.createUser(
+        { name: 'name', comment: 'comment' },
+        authenticationId
+      );
+      const user = userRepository.users[authenticationId.id];
+
       createdUserDto = {
         userId: user.userId,
-        firebaseUid: user.firebaseUid,
         comment: user.comment,
         name: user.name,
+        authenticationId: user.authenticationId,
       };
     });
 

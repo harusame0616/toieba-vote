@@ -26,7 +26,7 @@ export const getServerSideProps: GetServerSideProps<
 > = async ({ params }) => {
   const userApi = new NJAPIUserApi();
   const userId = params!.id;
-  const currentProfile = await userApi.getUser({ userId });
+  const currentProfile = await userApi.getUserByUserId(userId);
 
   return {
     props: {

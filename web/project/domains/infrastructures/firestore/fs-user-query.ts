@@ -1,6 +1,7 @@
 import admin from 'firebase-admin';
 import '../../../api/firebase';
 import { NotFoundError } from '../../../errors/not-found-error';
+import { AuthenticationId } from '../../models/user/user';
 import { UserDto, UserQuery } from '../../usecases/user-query-usecase';
 
 export const fsDb = admin.app('toieba').firestore();
@@ -14,10 +15,12 @@ export class FSUserQuery implements UserQuery {
     return { ...user, userId: snapShot.id };
   }
 
-  async queryWithFirebaseUid(firebaseUid: string): Promise<UserDto> {
+  async queryWithAuthenticationId(
+    authenticationId: AuthenticationId
+  ): Promise<UserDto> {
     const snapShot = await fsDb
       .collection('users')
-      .where('firebaseUid', '==', firebaseUid)
+      .where('authenticationId.id', '==', authenticationId.id)
       .get();
     if (!snapShot.docs.length) {
       throw new NotFoundError('ユーザーが見つかりません。');

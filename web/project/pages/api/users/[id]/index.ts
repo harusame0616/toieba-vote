@@ -2,7 +2,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { FSUserQuery } from '../../../../domains/infrastructures/firestore/fs-user-query';
 import { FSUserRepository } from '../../../../domains/infrastructures/firestore/fs-user-repository';
-import { UserProfile } from '../../../../domains/models/user/user';
+import {
+  AuthenticationType,
+  authenticationTypes, UserProfile
+} from '../../../../domains/models/user/user';
 import { UserCommandUsecase } from '../../../../domains/usecases/user-command-usecase';
 import { UserQueryUsecase } from '../../../../domains/usecases/user-query-usecase';
 import { ParameterError } from '../../../../errors/parameter-error';
@@ -30,17 +33,18 @@ export default async function handler(
         throw new ParameterError('IDの指定が不正です', { id });
       }
 
-      if (type === 'firebaseUid') {
+      if (
+        typeof type === 'string' &&
+        ((v: any): v is AuthenticationType => authenticationTypes.includes(v))(
+          type
+        )
+      ) {
         return res
           .status(200)
-          .send(await userQueryUsecase.queryWithFirebaseUid(id));
+          .send(await userQueryUsecase.queryWithAuthenticationId({ id, type }));
       }
 
-      if (type === 'userId') {
-        return res.status(200).send(await userQueryUsecase.queryWithUserId(id));
-      }
-
-      throw new ParameterError('IDのタイプが不正です', { type });
+      return res.status(200).send(await userQueryUsecase.queryWithUserId(id));
     },
     PUT: async ({ user }) => {
       if (!user) {
