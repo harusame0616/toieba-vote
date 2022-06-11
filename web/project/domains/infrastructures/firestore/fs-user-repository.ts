@@ -40,6 +40,7 @@ export class FSUserRepository implements UserRepository {
 
     const data = snapShot.data() as any;
     return new User({
+      userId,
       ...data,
     });
   }
