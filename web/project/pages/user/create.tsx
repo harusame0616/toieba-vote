@@ -1,41 +1,57 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useEffect, useRef } from 'react';
+import { useState } from 'react';
+import { UserProfile } from '../../api/user-api';
+import { NJAPIUserApi } from '../../api/user-api/next-js-api-user-api';
 import Band from '../../components/base/Band';
-import ErrorMessage from '../../components/case/error/ErrorMessage';
-import useUserCreation from '../../hooks/user/use-user-creation';
+import PrimaryButton from '../../components/case/primary/PrimaryButton';
+import UserEditForm from '../../components/domain/user/UserEditForm';
+import { ParameterError } from '../../errors/parameter-error';
 import style from './create.module.scss';
 
-const CreateUser: NextPage = () => {
-  const router = useRouter();
-  const { error, setName, name, comment, setComment, create } =
-    useUserCreation();
-  const nameInputRef = useRef<HTMLInputElement>(null);
+interface ServerSideProps {
+  defaultProfile: UserProfile;
+  to: string;
+  authenticationId: string;
+}
 
-  const createHandler = async () => {
-    if (!(await create())) {
-      return;
-    }
+export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
+  query,
+}) => {
+  if (
+    typeof query.authenticationId !== 'string' ||
+    (query.to != null && typeof query.to !== 'string') ||
+    (query.name != null && typeof query.name !== 'string')
+  ) {
+    throw new ParameterError(undefined, query);
+  }
 
-    location.href =
-      typeof router.query.to === 'string' && router.query.to.length
-        ? decodeURIComponent(router.query.to)
-        : '/';
+  return {
+    props: {
+      to: query.to?.length ? query.to : encodeURIComponent('/'),
+      authenticationId: query.authenticationId,
+      defaultProfile: {
+        name: query.name ?? '',
+        comment: '',
+      },
+    },
   };
+};
 
-  useEffect(() => {
-    const { name: defaultName } = router.query;
-    if (typeof defaultName !== 'string') {
-      return;
+const CreateUser: NextPage<ServerSideProps> = (param) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const create = async (profile: UserProfile) => {
+    const userApi = new NJAPIUserApi();
+    setIsLoading(true);
+    try {
+      await userApi.createUser(profile, param.authenticationId);
+    } finally {
+      setIsLoading(false);
     }
 
-    setName(defaultName);
-  }, [router.query]);
-
-  useEffect(() => {
-    nameInputRef?.current?.focus?.();
-  }, []);
+    location.href = decodeURIComponent(param.to);
+  };
 
   return (
     <div className={style.container}>
@@ -43,40 +59,26 @@ const CreateUser: NextPage = () => {
         <title>プロフィール登録 - 連想投稿SNS！といえばボート</title>
         <meta name="robots" content="noindex" key="robots" />
       </Head>
-      <Band>
-        <div className={style['items-wrap']}>
-          <div className={style.item}>
-            <div>名前</div>
-            <div>
-              <input
-                autoFocus
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                className={style.control}
-                ref={nameInputRef}
-              />
-              <ErrorMessage>{error.nameError}</ErrorMessage>
-            </div>
+      <Band>プロフィール登録</Band>
+      <div className={style['form-wrap']}>
+        <UserEditForm
+          defaultProfile={param.defaultProfile}
+          isLoading={isLoading}
+          onSubmit={async (e, userProfile) => {
+            await create(userProfile);
+            e.preventDefault();
+          }}
+        >
+          <div className={style.action}>
+            <PrimaryButton
+              type="submit"
+              className={style['register-button']}
+              disabled={isLoading}
+            >
+              登録する
+            </PrimaryButton>
           </div>
-          <div className={style.item}>
-            <div>コメント</div>
-            <div>
-              <textarea
-                value={comment}
-                onChange={(event) => setComment(event.target.value)}
-                className={style.control}
-                rows={5}
-              />
-              <ErrorMessage>{error.commentError}</ErrorMessage>
-            </div>
-          </div>
-        </div>
-      </Band>
-      <button onClick={createHandler} className={style['register-button']}>
-        登録
-      </button>
-      <div className={style['error-message']}>
-        <ErrorMessage>{error.createError}</ErrorMessage>
+        </UserEditForm>
       </div>
     </div>
   );

@@ -1,38 +1,26 @@
-import { CreateUserParam } from '../../domains/models/user/user';
 import { UserDto } from '../../domains/usecases/user-query-usecase';
-import { ParameterError } from '../../errors/parameter-error';
 import { http } from '../../library/http';
-import {
-  GetUserParam,
-  isGetUserParamByFirebaseId,
-  isGetUserParamByUserId,
-  UserProfile,
-  UserApi,
-} from '../user-api';
+import { UserApi, UserProfile } from '../user-api';
 
 export class NJAPIUserApi implements UserApi {
-  async createUser(param: Omit<CreateUserParam, 'firebaseUid'>): Promise<void> {
-    await http.post(`/api/users/`, param);
-    return;
+  async getUserByUserId(userId: string): Promise<UserDto> {
+    const res = await http.get(`/api/users/${userId}`);
+    return res.data ?? null;
+  }
+  async getUserByAuthenticationId(authenticationId: string): Promise<UserDto> {
+    const res = await http.get(`/api/users/${authenticationId}`, {
+      params: {
+        type: 'firebase',
+      },
+    });
+    return res.data ?? null;
   }
 
-  async getUser(param: GetUserParam): Promise<UserDto> {
-    let id: string;
-    let type: 'firebaseUid' | 'userId';
-
-    if (isGetUserParamByFirebaseId(param)) {
-      id = param.firebaseUid;
-      type = 'firebaseUid';
-    } else if (isGetUserParamByUserId(param)) {
-      id = param.userId;
-      type = 'userId';
-    } else {
-      throw new ParameterError('IDの指定が不正です', { param });
-    }
-
-    const res = await http.get(`/api/users/${id}?type=${type}`);
-
-    return res.data ?? null;
+  async createUser(
+    profile: UserProfile,
+    authenticationId: string
+  ): Promise<void> {
+    await http.post(`/api/users/`, { profile, authenticationId });
   }
 
   async editProfile(userId: string, profile: UserProfile): Promise<void> {

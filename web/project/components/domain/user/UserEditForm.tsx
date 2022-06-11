@@ -5,7 +5,7 @@ import ErrorMessage from '../../case/error/ErrorMessage';
 import style from './UserEditForm.module.scss';
 
 interface Props {
-  defaultProfile: UserProfile;
+  defaultProfile?: UserProfile;
   isLoading: boolean;
   children?: ReactNode;
   onSubmit: (event: FormEvent<HTMLFormElement>, profile: UserProfile) => any;

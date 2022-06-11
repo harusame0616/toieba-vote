@@ -27,7 +27,10 @@ export const authenticate = async (token?: string) => {
   }
 
   try {
-    return await userQueryUsecase.queryWithFirebaseUid(uid);
+    return await userQueryUsecase.queryWithAuthenticationId({
+      id: uid,
+      type: 'firebase',
+    });
   } catch (err) {
     throw new NotFoundError('ユーザーが見つかりませんでした。');
   }
@@ -86,7 +89,10 @@ export const requestHandler = async (
       }
 
       try {
-        user = await userQueryUsecase.queryWithFirebaseUid(uid);
+        user = await userQueryUsecase.queryWithAuthenticationId({
+          id: uid,
+          type: 'firebase',
+        });
       } catch (err) {
         // do nothing
       }

@@ -4,7 +4,7 @@ import { UserCommandUsecase } from '../../../domains/usecases/user-command-useca
 import { ParameterError } from '../../../errors/parameter-error';
 import { PermissionError } from '../../../errors/permission-error';
 import { UnauthorizedError } from '../../../errors/unauthorized-error';
-import { authenticate, requestHandler } from '../../../library/server-side-lib';
+import { requestHandler } from '../../../library/server-side-lib';
 
 const userCommandUsecase = new UserCommandUsecase({
   userRepository: new FSUserRepository(),
@@ -16,21 +16,26 @@ export default async function handler(
 ) {
   await requestHandler(req, res, {
     POST: async ({ firebaseUid }) => {
-      const { comment, name } = req.body;
-
       if (!firebaseUid) {
-        throw new UnauthorizedError('認証が必要です。');
+        throw new UnauthorizedError();
       }
 
-      if (typeof comment !== 'string' || typeof name !== 'string') {
-        throw new ParameterError('引数のフォーマットが不正です。', {
-          comment,
-          name,
-          firebaseUid,
-        });
+      if (
+        typeof req.body?.profile.comment !== 'string' ||
+        typeof req.body?.profile.name !== 'string' ||
+        typeof req.body.authenticationId !== 'string'
+      ) {
+        throw new ParameterError('引数のフォーマットが不正です。', req.body);
       }
 
-      await userCommandUsecase.createUser({ name, comment, firebaseUid });
+      if (firebaseUid !== req.body.authenticationId) {
+        throw new PermissionError();
+      }
+
+      await userCommandUsecase.createUser(req.body.profile, {
+        id: req.body.authenticationId,
+        type: 'firebase',
+      });
       res.status(200).send({});
     },
   });

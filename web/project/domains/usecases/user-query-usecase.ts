@@ -1,3 +1,5 @@
+import { AuthenticationId } from '../models/user/user';
+
 export interface UserDto {
   userId: string;
   name: string;
@@ -5,7 +7,9 @@ export interface UserDto {
 }
 
 export interface UserQuery {
-  queryWithFirebaseUid(firebaseUid: string): Promise<UserDto>;
+  queryWithAuthenticationId(
+    authenticationId: AuthenticationId
+  ): Promise<UserDto>;
   queryWithUserId(userId: string): Promise<UserDto>;
 }
 
@@ -20,7 +24,9 @@ export class UserQueryUsecase {
     return await this.param.userQuery.queryWithUserId(userId);
   }
 
-  async queryWithFirebaseUid(id: string) {
-    return await this.param.userQuery.queryWithFirebaseUid(id);
+  async queryWithAuthenticationId(authenticationId: AuthenticationId) {
+    return await this.param.userQuery.queryWithAuthenticationId(
+      authenticationId
+    );
   }
 }

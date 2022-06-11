@@ -6,9 +6,16 @@ export interface UserProfile {
   comment: string;
 }
 
+export const authenticationTypes = ['firebase'] as const;
+export type AuthenticationType = typeof authenticationTypes[number];
+export interface AuthenticationId {
+  id: string;
+  type: AuthenticationType;
+}
+
 interface UserConstructorParam extends UserProfile {
   userId: string;
-  firebaseUid: string;
+  authenticationId: AuthenticationId;
 }
 
 export type CreateUserParam = Omit<UserConstructorParam, 'userId'>;
@@ -18,31 +25,31 @@ export class User {
   static readonly COMMENT_MAX_LENGTH = 255;
 
   readonly userId: string;
-  readonly firebaseUid: string;
+  readonly authenticationId: AuthenticationId;
   private _name!: string;
   private _comment!: string;
 
-  constructor({ userId, firebaseUid, name, comment }: UserConstructorParam) {
-    if (!userId) {
+  constructor(param: UserConstructorParam) {
+    if (!param.userId) {
       throw new ParameterError('ユーザーIDは必須です。');
     }
-    if (!firebaseUid) {
-      throw new ParameterError('Firebase UIDは必須です。');
+
+    if (!param.authenticationId) {
+      throw new ParameterError('認証IDは必須です。');
     }
 
-    this.userId = userId;
-    this.firebaseUid = firebaseUid;
-    this.name = name;
-    this.comment = comment;
+    this.userId = param.userId;
+    this.authenticationId = param.authenticationId;
+    this.name = param.name;
+    this.comment = param.comment;
   }
 
-  static create(param: CreateUserParam) {
-    const id = crypto.randomUUID();
+  static create(profile: UserProfile, authenticationId: AuthenticationId) {
     return new User({
-      userId: id,
-      firebaseUid: param.firebaseUid,
-      name: param.name,
-      comment: param.comment ?? '',
+      userId: crypto.randomUUID(),
+      name: profile.name,
+      comment: profile.comment,
+      authenticationId: authenticationId,
     });
   }
 

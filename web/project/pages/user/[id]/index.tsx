@@ -42,7 +42,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   }
 
   const [user, answeredToiebaList] = await Promise.all([
-    userApi.getUser({ userId }),
+    userApi.getUserByUserId(userId),
     toiebaApi.getAnswered({ userId }),
   ]);
 

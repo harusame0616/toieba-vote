@@ -1,6 +1,11 @@
 import { AlreadyExistsError } from '../../errors/already-exists-error';
 import { NotFoundError } from '../../errors/not-found-error';
-import { CreateUserParam, User, UserProfile } from '../models/user/user';
+import {
+  AuthenticationId,
+  CreateUserParam,
+  User,
+  UserProfile,
+} from '../models/user/user';
 
 export interface UserDto {
   userId: string;
@@ -15,7 +20,9 @@ export interface FirebaseUserInfoDto {
 
 export interface UserRepository {
   findOneByUserId(userId: string): Promise<User | null>;
-  findOneByFirebaseUid(firebaseUid: string): Promise<User | null>;
+  findOneByAuthenticationId(
+    authenticationId: AuthenticationId
+  ): Promise<User | null>;
   save(user: User): Promise<void>;
 }
 
@@ -26,15 +33,16 @@ interface UserCommandUsecaseConstructorParam {
 export class UserCommandUsecase {
   constructor(private readonly param: UserCommandUsecaseConstructorParam) {}
 
-  async createUser(param: CreateUserParam) {
-    const user = await this.param.userRepository.findOneByFirebaseUid(
-      param.firebaseUid
+  async createUser(profile: UserProfile, authenticationId: AuthenticationId) {
+    const user = await this.param.userRepository.findOneByAuthenticationId(
+      authenticationId
     );
+
     if (user) {
       throw new AlreadyExistsError('登録済みのユーザーです。', { user });
     }
 
-    const newUser = User.create(param);
+    const newUser = User.create(profile, authenticationId);
     await this.param.userRepository.save(newUser);
   }
 
