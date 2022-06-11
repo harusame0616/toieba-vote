@@ -21,10 +21,10 @@ export class User {
 
   constructor({ userId, firebaseUid, name, comment }: UserConstructorParam) {
     if (!userId) {
-      new ParameterError('ユーザーIDは必須です。');
+      throw new ParameterError('ユーザーIDは必須です。');
     }
     if (!firebaseUid) {
-      new ParameterError('Firebase UIDは必須です。');
+      throw new ParameterError('Firebase UIDは必須です。');
     }
 
     this.userId = userId;
