@@ -2,6 +2,9 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Error from 'next/error';
 import Link from 'next/link';
 import { NJAPIToiebaApi } from '../api/toieba-api/next-js-api-toieba-api';
+import Band from '../components/base/Band';
+import ContentContainer from '../components/container/ContentContainer';
+import SectionContainer from '../components/container/SectionContainer';
 import ServiceLogo from '../components/domain/service/ServiceLogo';
 import { ToiebaBriefDto } from '../domains/usecases/toieba-query-usecase';
 import {
@@ -40,34 +43,38 @@ const Home: NextPage<ServerSideProps> = (props) => {
 
   const menu = [
     {
-      label: '新着の質問',
+      label: '新着のといえば',
       list: props.latest,
     },
     {
-      label: '人気の質問',
+      label: '人気のといえば',
       list: props.popular,
     },
   ];
 
   return (
     <div className={style.container}>
-      <h1 className={style.logo}>
-        <ServiceLogo />
-      </h1>
-      <div>
-        {menu.map((item) => (
-          <div className={style.menu} key={item.label}>
-            <h2 className={style['menu-label']}>{item.label}</h2>
+      <SectionContainer>
+        <ContentContainer>
+          <h1 className={style.logo}>
+            <ServiceLogo />
+          </h1>
+        </ContentContainer>
+      </SectionContainer>
+      {menu.map((item) => (
+        <SectionContainer key={item.label}>
+          <Band key={item.label}>{item.label}</Band>
+          <ContentContainer>
             {item.list.map((toieba) => (
-              <div key={toieba.toiebaId}>
+              <div className={style['item']} key={toieba.toiebaId}>
                 <Link href={`/toieba/${toieba.toiebaId}/answer`}>
                   <a>{toieba.theme} といえば</a>
                 </Link>
               </div>
             ))}
-          </div>
-        ))}
-      </div>
+          </ContentContainer>
+        </SectionContainer>
+      ))}
     </div>
   );
 };

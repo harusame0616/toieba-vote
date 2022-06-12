@@ -51,21 +51,6 @@
 
       button {
         width: 90px;
-        cursor: pointer;
-        border-radius: 2px;
-        box-shadow: 1px 1px 2px black;
-
-        &.ok {
-          background: var(--color-5);
-          color: white;
-          border: solid 1px var(--color-5);
-        }
-
-        &.cancel {
-          border: solid 1px var(--color-5);
-          background: var(--color-4);
-          color: var(--color-5);
-        }
       }
     }
   }

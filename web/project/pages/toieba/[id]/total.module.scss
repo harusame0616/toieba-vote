@@ -1,101 +1,85 @@
-.container {
-  padding: 10% 0 0;
+.choices {
+  pointer-events: none;
+
+  .label {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+
+    .text {
+      display: flex;
+      align-items: flex-end;
+
+      flex-grow: 1;
+    }
+
+    .info {
+      display: flex;
+      align-items: flex-end;
+
+      flex-grow: 0;
+    }
+  }
+}
+
+.comment-list {
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  .choices-wrap {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: 0 20px;
-    margin: 30px 0 60px;
-    .choices {
-      width: min(100%, 640px);
-      pointer-events: none;
+  width: 100%;
+  margin-bottom: 100px;
+  gap: 20px;
 
-      .label {
-        width: 100%;
+  .comment {
+    border: 1px solid var(--color-5);
+    border-radius: 5px;
+    box-shadow: 3px 3px 6px black;
+    width: 100%;
+    max-width: 640px;
+    padding: 10px;
+    background: white;
+
+    &-header {
+      display: flex;
+      margin-bottom: 20px;
+
+      .name {
         display: flex;
         align-items: flex-end;
+        flex-grow: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
 
-        .text {
-          display: flex;
-          align-items: flex-end;
-
-          flex-grow: 1;
+        &::after {
+          content: 'さん';
+          font-weight: lighter;
+          font-size: 0.7rem;
+          margin-bottom: 2.5px;
+          margin-left: 4px;
         }
+      }
 
-        .info {
-          display: flex;
-          align-items: flex-end;
-
-          flex-grow: 0;
-        }
+      .date {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        flex-grow: 0;
+        color: grey;
+        font-size: 0.7rem;
       }
     }
-  }
 
-  .comment-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    .comment-body {
+      margin-bottom: 40px;
+      white-space: pre-wrap;
+    }
 
-    width: 100%;
-    padding: 30px 20px;
-    margin-bottom: 100px;
-    gap: 20px;
-
-    .comment {
-      border: 1px solid var(--color-5);
-      border-radius: 5px;
-      box-shadow: 3px 3px 6px black;
-      width: 100%;
-      max-width: 640px;
-      padding: 10px;
-      background: white;
-
-      &-header {
-        display: flex;
-        margin-bottom: 20px;
-
-        .name {
-          display: flex;
-          align-items: flex-end;
-          flex-grow: 1;
-          font-size: 1.2rem;
-          font-weight: bold;
-
-          &::after {
-            content: 'さん';
-            font-weight: lighter;
-            font-size: 0.7rem;
-            margin-bottom: 2.5px;
-            margin-left: 4px;
-          }
-        }
-
-        .date {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          flex-grow: 0;
-          color: grey;
-          font-size: 0.7rem;
-        }
-      }
-
-      .comment-body {
-        margin-bottom: 40px;
-        white-space: pre-wrap;
-      }
-
-      .comment-footer {
-        border-top: 1px solid grey;
-        padding-top: 10px;
-        display: flex;
-        justify-content: flex-end;
-      }
+    .comment-footer {
+      border-top: 1px solid grey;
+      padding-top: 10px;
+      display: flex;
+      justify-content: flex-end;
     }
   }
 }

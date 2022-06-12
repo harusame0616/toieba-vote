@@ -1,18 +1,6 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 12px 0;
-
-  .logo {
-    max-width: 420px;
-  }
-
-  .menu {
-    margin-bottom: 48px;
-
-    .menu-label {
-      margin: 0;
-    }
+  .item {
+    display: flex;
+    justify-content: center;
   }
 }

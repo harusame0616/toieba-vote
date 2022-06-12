@@ -1,4 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
+import PrimaryButton from '../../case/primary/PrimaryButton';
+import SecondaryButton from '../../case/secondary/SecondaryButton';
 import UserMenu from '../user/UserMenu';
 import ServiceLogo from './ServiceLogo';
 import style from './ServiceMenu.module.scss';
@@ -26,17 +28,19 @@ const HeaderMenu = (prop: HeaderMenuProp) => {
         </div>
       </div>
       <div className={style.action}>
-        <button onClick={prop.onToiebaCreate}>質問を作成する</button>
+        <SecondaryButton onClick={prop.onToiebaCreate}>
+          といえばを作成する
+        </SecondaryButton>
         {prop.user.userId ? (
           <div className={style['user-wrap']}>
-            <button
+            <PrimaryButton
               onClick={(e) => {
                 e.stopPropagation();
                 prop.menuState[1](true);
               }}
             >
               {prop.user.name ?? ''}
-            </button>
+            </PrimaryButton>
             <div className={style['menu-wrap']}>
               {prop.menuState[0] ? (
                 <UserMenu userId={prop.user.userId} />
@@ -44,7 +48,7 @@ const HeaderMenu = (prop: HeaderMenuProp) => {
             </div>
           </div>
         ) : (
-          <button onClick={prop.onLogin}>ログイン</button>
+          <PrimaryButton onClick={prop.onLogin}>ログイン</PrimaryButton>
         )}
       </div>
     </header>

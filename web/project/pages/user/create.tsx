@@ -1,12 +1,18 @@
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useContext, useState } from 'react';
 import { UserProfile } from '../../api/user-api';
 import { NJAPIUserApi } from '../../api/user-api/next-js-api-user-api';
 import Band from '../../components/base/Band';
+import BackButton from '../../components/case/back/BackButton';
 import PrimaryButton from '../../components/case/primary/PrimaryButton';
+import ContentContainer from '../../components/container/ContentContainer';
+import NaviContainer from '../../components/container/NaviContainer';
+import SectionContainer from '../../components/container/SectionContainer';
 import UserEditForm from '../../components/domain/user/UserEditForm';
 import { ParameterError } from '../../errors/parameter-error';
+import { AuthContext } from '../_app';
 import style from './create.module.scss';
 
 interface ServerSideProps {
@@ -40,6 +46,8 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 
 const CreateUser: NextPage<ServerSideProps> = (param) => {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const auth = useContext(AuthContext);
 
   const create = async (profile: UserProfile) => {
     const userApi = new NJAPIUserApi();
@@ -53,34 +61,42 @@ const CreateUser: NextPage<ServerSideProps> = (param) => {
     location.href = decodeURIComponent(param.to);
   };
 
-  return (
-    <div className={style.container}>
+  return auth ? (
+    <div>
       <Head>
         <title>プロフィール登録 - 連想投稿SNS！といえばボート</title>
         <meta name="robots" content="noindex" key="robots" />
       </Head>
-      <Band>プロフィール登録</Band>
-      <div className={style['form-wrap']}>
-        <UserEditForm
-          defaultProfile={param.defaultProfile}
-          isLoading={isLoading}
-          onSubmit={async (e, userProfile) => {
-            await create(userProfile);
-            e.preventDefault();
-          }}
-        >
-          <div className={style.action}>
-            <PrimaryButton
-              type="submit"
-              className={style['register-button']}
-              disabled={isLoading}
-            >
-              登録する
-            </PrimaryButton>
-          </div>
-        </UserEditForm>
-      </div>
+      <SectionContainer>
+        <Band>プロフィール登録</Band>
+        <NaviContainer>
+          <BackButton
+            onClick={() => {
+              auth.logout();
+              router.push('/');
+            }}
+          />
+        </NaviContainer>
+        <ContentContainer>
+          <UserEditForm
+            defaultProfile={param.defaultProfile}
+            isLoading={isLoading}
+            onSubmit={async (e, userProfile) => {
+              await create(userProfile);
+              e.preventDefault();
+            }}
+          >
+            <div className={style.action}>
+              <PrimaryButton type="submit" disabled={isLoading}>
+                登録する
+              </PrimaryButton>
+            </div>
+          </UserEditForm>
+        </ContentContainer>
+      </SectionContainer>
     </div>
+  ) : (
+    <div />
   );
 };
 

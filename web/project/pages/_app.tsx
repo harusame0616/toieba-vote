@@ -87,9 +87,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             }}
           />
 
-          <main className={style.main}>
-            <Component {...pageProps} />
-          </main>
+          <Component {...pageProps} />
         </div>
       </LoggedInUserContext.Provider>
     </AuthContext.Provider>
