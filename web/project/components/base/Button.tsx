@@ -22,6 +22,7 @@ const Button = ({
     background: outline || text ? 'inherit' : background,
     borderColor: background,
     borderWidth: text ? 0 : 1,
+    boxShadow: text ? undefined : '1px 1px 2px rgb(0 0 0 / 40%)',
   };
   return (
     <button

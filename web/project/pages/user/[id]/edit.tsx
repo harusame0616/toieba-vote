@@ -75,7 +75,7 @@ const UserEdit: NextPage<ServerSideProps> = ({ userId, currentProfile }) => {
         >
           <div className={style.action}>
             <PrimaryButton type="submit" disabled={isLoading}>
-              更新する
+              プロフィールを更新する
             </PrimaryButton>
           </div>
         </UserEditForm>
