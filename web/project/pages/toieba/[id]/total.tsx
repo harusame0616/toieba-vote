@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { useContext, useEffect, useState } from 'react';
-import { TotalDto } from '../../../api/answer-api';
+import { AnswerDto, TotalDto } from '../../../api/answer-api';
 import { NJAPIAnswerApi } from '../../../api/toieba-api/next-js-api-answer-api';
 import Band from '../../../components/base/Band';
 import Dialog from '../../../components/base/Dialog';
@@ -38,25 +38,47 @@ dayjs.extend(utc);
 type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
 
 interface ServerSideSuccessProps {
+  answerUserId: string | null;
+  answer: AnswerDto | null;
   toiebaId: string;
   total: TotalDto;
 }
 
 interface QueryParam extends ParsedUrlQuery {
   id: string;
+  answerUserId: string;
 }
 
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps,
   QueryParam
-> = async ({ query: { id } }) => {
+> = async ({ req, query: { id, answerUserId = null } }) => {
   const answerApi = new NJAPIAnswerApi();
-  let total;
+  console.log({ req });
 
   if (!id || typeof id !== 'string') {
     throw new ParameterError('といえばIDが不正です');
   }
 
+  if (answerUserId && typeof answerUserId !== 'string') {
+    throw new ParameterError('回答者IDが不正です');
+  }
+
+  let answer = null;
+  if (answerUserId) {
+    try {
+      answer = await answerApi.getAnswerOfToiebaByUserId({
+        toiebaId: id,
+        answerUserId,
+      });
+    } catch (error: any) {
+      if (error.status !== 404) {
+        throw error;
+      }
+    }
+  }
+
+  let total;
   try {
     [total] = await Promise.all([answerApi.getTotal({ toiebaId: id })]);
   } catch (error: any) {
@@ -69,6 +91,8 @@ export const getServerSideProps: GetServerSideProps<
 
   return {
     props: {
+      answerUserId,
+      answer,
       toiebaId: id,
       total,
     },
@@ -134,6 +158,14 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
               ))}
             </SelectGroup>
           </div>
+        </ContantContainer>
+        <ContantContainer>
+          {prop.answerUserId ? (
+            <div>
+              {prop.answer?.userName ?? 'お名前不明'} さんは 「
+              {prop.answer?.choiceLabel ?? '回答なし'}」 です！！
+            </div>
+          ) : null}
         </ContantContainer>
       </SectionContainer>
       <SectionContainer>

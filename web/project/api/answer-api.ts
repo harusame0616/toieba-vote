@@ -1,7 +1,14 @@
-import { TotalDto } from '../domains/usecases/answer-query-usecase';
+import {
+  AnswerDto,
+  GetAnswerOfToiebaByUserId,
+  TotalDto,
+} from '../domains/usecases/answer-query-usecase';
 
-interface AnswerApi {
+export interface AnswerApi {
   getTotal(param: { toiebaId: string }): Promise<TotalDto>;
+  getAnswerOfToiebaByUserId(
+    param: GetAnswerOfToiebaByUserId
+  ): Promise<AnswerDto>;
 }
 
-export type { TotalDto, AnswerApi };
+export type { TotalDto, AnswerDto, GetAnswerOfToiebaByUserId };
