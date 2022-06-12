@@ -1,26 +1,29 @@
 import { ButtonHTMLAttributes } from 'react';
-import style from './RoundButton.module.scss';
+import style from './Button.module.scss';
 
-interface Prop extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProp extends ButtonHTMLAttributes<HTMLButtonElement> {
   background?: string;
   color?: string;
   outline?: boolean;
+  text?: boolean;
 }
 
-const RoundButton = ({
+const Button = ({
   background = '#222831',
   color = 'white',
   type = 'button',
   outline = false,
+  text = false,
   children,
   ...rest
-}: Prop) => {
+}: ButtonProp) => {
   let computedStyle = {
     color: outline ? background : color,
-    background: outline ? 'inherit' : background,
+    background: outline || text ? 'inherit' : background,
     borderColor: background,
+    borderWidth: text ? 0 : 1,
+    boxShadow: text ? undefined : '1px 1px 2px rgb(0 0 0 / 40%)',
   };
-
   return (
     <button
       {...rest}
@@ -33,4 +36,4 @@ const RoundButton = ({
   );
 };
 
-export default RoundButton;
+export default Button;

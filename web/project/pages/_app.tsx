@@ -45,13 +45,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       http.setAuthorization(user.token);
       if (user.id) {
         try {
-          setLoggedInUser(await userApi.getUser({ firebaseUid: user.id }));
+          setLoggedInUser(await userApi.getUserByAuthenticationId(user.id));
         } catch (err) {
           const [_, queryString] = router.asPath.split('?');
           const to = new URLSearchParams(queryString).get('to');
           router.push({
             pathname: '/user/create',
-            query: { name: user.displayName, firebaseUid: user.id, to },
+            query: { name: user.displayName, authenticationId: user.id, to },
           });
         }
       }
@@ -87,9 +87,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             }}
           />
 
-          <main className={style.main}>
-            <Component {...pageProps} />
-          </main>
+          <Component {...pageProps} />
         </div>
       </LoggedInUserContext.Provider>
     </AuthContext.Provider>

@@ -1,0 +1,12 @@
+.container {
+  cursor: pointer;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px;
+  font-weight: bold;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.2;
+  }
+}

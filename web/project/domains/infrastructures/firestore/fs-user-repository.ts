@@ -1,24 +1,25 @@
 import admin from 'firebase-admin';
 import '../../../api/firebase';
-import { Toieba } from '../../models/toieba/toieba';
-import { User } from '../../models/user/user';
+import { AuthenticationId, User } from '../../models/user/user';
 import { UserRepository } from '../../usecases/user-command-usecase';
-export const globalStore: { [key: string]: Toieba } = {};
 
 export const fsDb = admin.app('toieba').firestore();
 export class FSUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     await fsDb.collection('users').doc(user.userId).set({
       name: user.name,
-      firebaseUid: user.firebaseUid,
       comment: user.comment,
+      authenticationId: user.authenticationId,
     });
   }
 
-  async findOneByFirebaseUid(firebaseUid: string): Promise<User | null> {
+  async findOneByAuthenticationId(
+    authenticationId: AuthenticationId
+  ): Promise<User | null> {
+    console.log('findoneby authenticationid', { authenticationId });
     const snapShot = await fsDb
       .collection('users')
-      .where('firebaseUid', '==', firebaseUid)
+      .where('authenticationId.id', '==', authenticationId.id)
       .get();
 
     if (!snapShot.size) {
@@ -27,6 +28,7 @@ export class FSUserRepository implements UserRepository {
 
     const data = snapShot.docs[0].data() as any;
     return new User({
+      userId: snapShot.docs[0].id,
       ...data,
     });
   }
@@ -40,6 +42,7 @@ export class FSUserRepository implements UserRepository {
 
     const data = snapShot.data() as any;
     return new User({
+      userId,
       ...data,
     });
   }

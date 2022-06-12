@@ -42,6 +42,17 @@ const _delete = async (url: string, config?: AxiosRequestConfig) => {
   }
 };
 
+const put = async (url: string, data?: any, config?: AxiosRequestConfig) => {
+  try {
+    return await instance.put(url, data, {
+      headers,
+      ...config,
+    });
+  } catch (err: any) {
+    throw err.response ?? err;
+  }
+};
+
 const setAuthorization = (token?: string) => {
   headers.Authorization = token ?? '';
 };
@@ -49,6 +60,7 @@ const setAuthorization = (token?: string) => {
 export const http = {
   post,
   get,
+  put,
   setAuthorization,
   delete: _delete,
 };

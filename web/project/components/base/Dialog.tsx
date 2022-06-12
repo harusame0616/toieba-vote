@@ -1,4 +1,6 @@
 import { DialogHTMLAttributes, HTMLAttributes, useEffect } from 'react';
+import PrimaryButton from '../case/primary/PrimaryButton';
+import SecondaryButton from '../case/secondary/SecondaryButton';
 import style from './Dialog.module.scss';
 
 interface DialogParam extends HTMLAttributes<HTMLDivElement> {
@@ -37,12 +39,12 @@ const Dialog = ({
         <div className={style.title}>{title}</div>
         <div className={style.body}>{children}</div>
         <div className={style.action}>
-          <button onClick={() => onCancel()} className={style.cancel}>
+          <SecondaryButton onClick={() => onCancel()} className={style.cancel}>
             キャンセル
-          </button>
-          <button onClick={() => onOk()} className={style.ok}>
+          </SecondaryButton>
+          <PrimaryButton onClick={() => onOk()} className={style.ok}>
             OK
-          </button>
+          </PrimaryButton>
         </div>
       </div>
     </div>

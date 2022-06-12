@@ -1,30 +1,5 @@
 .container {
-  padding: 80px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .items-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    row-gap: 20px;
-
-    .item {
-      text-align: left;
-      max-width: 280px;
-      width: 100%;
-
-      .control {
-        width: 100%;
-      }
-    }
-  }
-
-  .register-button {
-    margin-top: 40px;
-  }
-  .error-message {
-    max-width: 640px;
+  .action {
+    margin-top: 10px;
   }
 }

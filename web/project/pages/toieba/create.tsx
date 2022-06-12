@@ -1,17 +1,23 @@
 import type { NextPage } from 'next';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
 import SelectGroup from '../../components/base/SelectGroup';
 import SelectItem from '../../components/base/SelectItem';
 import AddButton from '../../components/case/add/AddButton';
+import BackButton from '../../components/case/back/BackButton';
 import DeleteButton from '../../components/case/delete/DeleteButton';
 import DownButton from '../../components/case/down/DownButton';
-import UpButton from '../../components/case/up/UpButton';
 import ErrorMessage from '../../components/case/error/ErrorMessage';
+import PrimaryButton from '../../components/case/primary/PrimaryButton';
+import UpButton from '../../components/case/up/UpButton';
+import ActionContainer from '../../components/container/ActionContainer';
+import ContentContainer from '../../components/container/ContentContainer';
+import NaviContainer from '../../components/container/NaviContainer';
+import SectionContainer from '../../components/container/SectionContainer';
 import ToiebaBand from '../../components/domain/toieba/ToiebaBand';
 import useToiebaCreation from '../../hooks/toieba/use-toieba-creation';
 import style from './create.module.scss';
-import Head from 'next/head';
 
 const CreateTheme: NextPage = () => {
   const themeInputRef = useRef<HTMLInputElement>(null);
@@ -24,7 +30,7 @@ const CreateTheme: NextPage = () => {
   const [isProcessing, setProcessing] = useState(false);
 
   const toieba = useToiebaCreation();
-  const history = useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     themeInputRef.current?.focus();
@@ -36,7 +42,7 @@ const CreateTheme: NextPage = () => {
 
     try {
       const { toiebaId } = await toieba.save();
-      await history.push(`/toieba/${toiebaId}/answer`);
+      await router.push(`/toieba/${toiebaId}/answer`);
     } catch (err: any) {
       setSaveErrorMessage(err.data.message);
     }
@@ -71,60 +77,70 @@ const CreateTheme: NextPage = () => {
         <title>といえば投稿 - 連想投稿SNS！といえばボート</title>
         <meta name="robots" content="noindex" key="robots" />
       </Head>
-      <ToiebaBand>
-        <div className={style['theme-input']}>
-          <input
-            type="text"
-            onChange={(e) => setThemeTmp(e.target.value)}
-            onBlur={validateTheme}
-            value={themeTmp}
-            ref={themeInputRef}
-          />
-          <ErrorMessage>{themeErrorMessage}</ErrorMessage>
-        </div>
-      </ToiebaBand>
-      <div className={style.choices}>
-        <SelectGroup>
-          <div className={style['choice-input']}>
+      <SectionContainer>
+        <ToiebaBand>
+          <div className={style['theme-input']}>
             <input
-              ref={choiceInputRef}
-              disabled={!toieba.canAddChoice}
-              onChange={(e) => setNewChoiceLabel(e.target.value)}
-              value={newChoiceLabel}
+              type="text"
+              onChange={(e) => setThemeTmp(e.target.value)}
+              onBlur={validateTheme}
+              value={themeTmp}
+              ref={themeInputRef}
             />
-            <AddButton
-              disabled={!toieba.canAddChoice}
-              onClick={addChoiceHandler}
-            />
-            <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
+            <ErrorMessage>{themeErrorMessage}</ErrorMessage>
           </div>
+        </ToiebaBand>
+        <NaviContainer>
+          <BackButton onClick={() => router.back()} />
+        </NaviContainer>
+        <ContentContainer>
+          <SelectGroup>
+            <div className={style['choice-input']}>
+              <input
+                ref={choiceInputRef}
+                disabled={!toieba.canAddChoice}
+                onChange={(e) => setNewChoiceLabel(e.target.value)}
+                value={newChoiceLabel}
+              />
+              <AddButton
+                disabled={!toieba.canAddChoice}
+                onClick={addChoiceHandler}
+              />
+              <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
+            </div>
 
-          {toieba.choices.map(({ index, label }) => (
-            <SelectItem key={label} index={index}>
-              <div className={style.text}>{label}</div>
-              <div className={style.actions}>
-                <span className={style['button-wrap']}>
-                  <UpButton
-                    onClick={() => toieba.swapChoiceOrder(index, index - 1)}
-                    disabled={index == 0}
-                  />
-                </span>
-                <span className={style['button-wrap']}>
-                  <DownButton
-                    onClick={() => toieba.swapChoiceOrder(index, index + 1)}
-                    disabled={index == toieba.choices.length - 1}
-                  />
-                </span>
-                <span className={style['delete-wrap']}>
-                  <DeleteButton onClick={() => toieba.deleteChoice(index)} />
-                </span>
-              </div>
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </div>
-      <button disabled={isProcessing}>作成</button>
-      <ErrorMessage>{saveErrorMessage}</ErrorMessage>
+            {toieba.choices.map(({ index, label }) => (
+              <SelectItem key={label} index={index}>
+                <div className={style.text}>{label}</div>
+                <div className={style.actions}>
+                  <span className={style['button-wrap']}>
+                    <UpButton
+                      onClick={() => toieba.swapChoiceOrder(index, index - 1)}
+                      disabled={index == 0}
+                    />
+                  </span>
+                  <span className={style['button-wrap']}>
+                    <DownButton
+                      onClick={() => toieba.swapChoiceOrder(index, index + 1)}
+                      disabled={index == toieba.choices.length - 1}
+                    />
+                  </span>
+                  <span className={style['delete-wrap']}>
+                    <DeleteButton onClick={() => toieba.deleteChoice(index)} />
+                  </span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectGroup>
+
+          <ActionContainer>
+            <PrimaryButton type="submit" disabled={isProcessing}>
+              といえばを作成する
+            </PrimaryButton>
+            <ErrorMessage>{saveErrorMessage}</ErrorMessage>
+          </ActionContainer>
+        </ContentContainer>
+      </SectionContainer>
     </form>
   );
 };

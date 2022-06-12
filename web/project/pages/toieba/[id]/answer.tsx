@@ -17,6 +17,10 @@ import {
 import useToiebaAnswer from '../../../hooks/toieba/use-toieba-answer';
 import { LoggedInUserContext } from '../../_app';
 import style from './answer.module.scss';
+import ContantContainer from '../../../components/container/ContentContainer';
+import SectionContainer from '../../../components/container/SectionContainer';
+import NaviContainer from '../../../components/container/NaviContainer';
+import BackButton from '../../../components/case/back/BackButton';
 
 const api = new NJAPIToiebaApi();
 type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
@@ -67,27 +71,32 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
   };
 
   return (
-    <div className={style.container}>
+    <div>
       <Head>
         <title>
           {' '}
           {toieba.theme}といえばの投票 - 連想投稿SNS！といえばボート{' '}
         </title>
       </Head>
-      <ToiebaBand>{toieba?.theme}</ToiebaBand>
-      <div className={style.choices}>
-        <SelectGroup>
-          {toieba?.choices?.map?.(({ label, choiceId }, index) => (
-            <SelectItem
-              index={index}
-              onClick={() => answerHandler(choiceId)}
-              key={label}
-            >
-              {label}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </div>
+      <SectionContainer>
+        <ToiebaBand>{toieba?.theme}</ToiebaBand>
+        <NaviContainer>
+          <BackButton onClick={() => router.back()}></BackButton>
+        </NaviContainer>
+        <ContantContainer>
+          <SelectGroup>
+            {toieba?.choices?.map?.(({ label, choiceId }, index) => (
+              <SelectItem
+                index={index}
+                onClick={() => answerHandler(choiceId)}
+                key={label}
+              >
+                {label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </ContantContainer>
+      </SectionContainer>
     </div>
   );
 };
