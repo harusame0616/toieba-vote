@@ -82,8 +82,8 @@ const CreateUser: NextPage<ServerSideProps> = (param) => {
             defaultProfile={param.defaultProfile}
             isLoading={isLoading}
             onSubmit={async (e, userProfile) => {
-              await create(userProfile);
               e.preventDefault();
+              await create(userProfile);
             }}
           >
             <div className={style.action}>
