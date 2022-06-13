@@ -30,7 +30,6 @@ export default async function handler(
       const answer = await answerQueryUsecase.getAnswerOfToiebaByUserId(
         req.query
       );
-      console.log({ answer });
       if (!answer) {
         throw new NotFoundError('回答が見つかりません。');
       }

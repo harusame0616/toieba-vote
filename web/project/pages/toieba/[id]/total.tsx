@@ -1,7 +1,6 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { GetServerSideProps, NextPage } from 'next';
-import Error from 'next/error';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -22,12 +21,8 @@ import NaviContainer from '../../../components/container/NaviContainer';
 import SectionContainer from '../../../components/container/SectionContainer';
 import LikeButton from '../../../components/domain/like/LikeButton';
 import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
+import TwitterShare from '../../../components/domain/twitter/TwitterShare';
 import { ParameterError } from '../../../errors/parameter-error';
-import {
-  isServerSideErrorProps,
-  ServerSideErrorProps,
-  toServerSideError,
-} from '../../../errors/server-side-error';
 import useCommentLike from '../../../hooks/comment/use-comment-like';
 import useCommentList from '../../../hooks/comment/use-comment-list';
 import useCommentPost from '../../../hooks/comment/use-comment-post';
@@ -35,9 +30,7 @@ import { LoggedInUserContext } from '../../_app';
 import style from './total.module.scss';
 dayjs.extend(utc);
 
-type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
-
-interface ServerSideSuccessProps {
+interface ServerSideProps {
   answerUserId: string | null;
   answer: AnswerDto | null;
   toiebaId: string;
@@ -54,7 +47,6 @@ export const getServerSideProps: GetServerSideProps<
   QueryParam
 > = async ({ req, query: { id, answerUserId = null } }) => {
   const answerApi = new NJAPIAnswerApi();
-  console.log({ req });
 
   if (!id || typeof id !== 'string') {
     throw new ParameterError('といえばIDが不正です');
@@ -78,16 +70,7 @@ export const getServerSideProps: GetServerSideProps<
     }
   }
 
-  let total;
-  try {
-    [total] = await Promise.all([answerApi.getTotal({ toiebaId: id })]);
-  } catch (error: any) {
-    return {
-      props: {
-        error: toServerSideError(error),
-      },
-    };
-  }
+  const [total] = await Promise.all([answerApi.getTotal({ toiebaId: id })]);
 
   return {
     props: {
@@ -123,13 +106,14 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
     router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
   };
 
+  const [shareUrl, setShareUrl] = useState('');
   useEffect(() => {
+    setShareUrl(
+      `${location.protocol}//${location.host}/toieba/${prop.toiebaId}/answer` +
+        (prop.answerUserId ? `?answerUserId=${prop.answerUserId}` : '')
+    );
     refreshCommentList();
   }, []);
-
-  if (isServerSideErrorProps(prop)) {
-    return <Error statusCode={prop.error.status} />;
-  }
 
   const { theme, choices, count: totalCount } = prop.total;
 
@@ -159,6 +143,13 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
             </SelectGroup>
           </div>
         </ContantContainer>
+        <NaviContainer justify="flex-end">
+          <TwitterShare
+            url={shareUrl}
+            text={`${prop.total.theme}といえば%20-%20連想投稿SNS！といえばボート%0a%0a`}
+            hashTag="といえばボート"
+          />
+        </NaviContainer>
         <ContantContainer>
           {prop.answerUserId ? (
             <div>
