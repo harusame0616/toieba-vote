@@ -14,7 +14,7 @@ const TwitterShare = (prop: Prop) => {
 
   useEffect(() => {
     setUrl(
-      `https://twitter.com/share?url=${prop.url}%0a0a${
+      `https://twitter.com/share?url=${prop.url}%0a%0a${
         prop.text ? `&text=${prop.text}` : ''
       }${prop.hashTag ? `&hashtags=${prop.hashTag}` : ''}`
     );

@@ -110,10 +110,10 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
   useEffect(() => {
     setShareUrl(
       `${location.protocol}//${location.host}/toieba/${prop.toiebaId}/answer` +
-        (prop.answerUserId ? `?answerUserId=${prop.answerUserId}` : '')
+        (loggedInUser.userId ? `?answerUserId=${loggedInUser.userId}` : '')
     );
     refreshCommentList();
-  }, []);
+  }, [loggedInUser]);
 
   const { theme, choices, count: totalCount } = prop.total;
 
