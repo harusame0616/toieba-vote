@@ -16,7 +16,6 @@ export class FSUserRepository implements UserRepository {
   async findOneByAuthenticationId(
     authenticationId: AuthenticationId
   ): Promise<User | null> {
-    console.log('findoneby authenticationid', { authenticationId });
     const snapShot = await fsDb
       .collection('users')
       .where('authenticationId.id', '==', authenticationId.id)
