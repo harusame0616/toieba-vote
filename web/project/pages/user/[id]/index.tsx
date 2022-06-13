@@ -1,5 +1,4 @@
 import { GetServerSideProps, NextPage } from 'next';
-import Error from 'next/error';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -14,19 +13,15 @@ import SectionContainer from '../../../components/container/SectionContainer';
 import UserEditButton from '../../../components/domain/user/UserEditButton';
 import { ToiebaBriefDto } from '../../../domains/usecases/toieba-query-usecase';
 import { UserDto } from '../../../domains/usecases/user-query-usecase';
-import {
-  isServerSideErrorProps,
-  ServerSideErrorProps,
-} from '../../../errors/server-side-error';
+import { ParameterError } from '../../../errors/parameter-error';
 import { LoggedInUserContext } from '../../_app';
 import style from './index.module.scss';
 
-interface ServerSideSuccessProps {
+interface ServerSideProps {
   user: UserDto;
+  userId: string;
   answeredToiebaList: ToiebaBriefDto[];
 }
-type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
-
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   query,
 }) => {
@@ -35,14 +30,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
   const toiebaApi = new NJAPIToiebaApi();
 
   if (!userId || typeof userId != 'string') {
-    return {
-      props: {
-        error: {
-          status: 400,
-          message: 'userId',
-        },
-      },
-    };
+    throw new ParameterError();
   }
 
   const [user, answeredToiebaList] = await Promise.all([
@@ -52,6 +40,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 
   return {
     props: {
+      userId,
       user,
       answeredToiebaList,
     },
@@ -66,10 +55,6 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
   useEffect(() => {
     setCanEditProfile(router.query.id === loggedInUser.userId);
   }, [loggedInUser.userId, router.query.id]);
-
-  if (isServerSideErrorProps(props)) {
-    return <Error statusCode={props.error.status} />;
-  }
 
   const goToProfileEdit = () => {
     router.push(`/user/${user.userId}/edit`);
@@ -111,7 +96,9 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
             {answeredToiebaList.length ? (
               answeredToiebaList.map((toieba) => (
                 <div key={toieba.toiebaId}>
-                  <Link href={`/toieba/${toieba.toiebaId}/answer`}>
+                  <Link
+                    href={`/toieba/${toieba.toiebaId}/answer?answerUserId=${props.userId}`}
+                  >
                     <a>{toieba.theme} といえば</a>
                   </Link>
                 </div>

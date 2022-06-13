@@ -1,73 +1,69 @@
+import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { GetServerSideProps, NextPage } from 'next';
-import Error from 'next/error';
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { ParsedUrlQuery } from 'querystring';
 import { useContext } from 'react';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
+import Button from '../../../components/base/Button';
 import SelectGroup from '../../../components/base/SelectGroup';
 import SelectItem from '../../../components/base/SelectItem';
+import BackButton from '../../../components/case/back/BackButton';
+import ContantContainer from '../../../components/container/ContentContainer';
+import NaviContainer from '../../../components/container/NaviContainer';
+import SectionContainer from '../../../components/container/SectionContainer';
 import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ToiebaDto } from '../../../domains/usecases/toieba-query-usecase';
-import Head from 'next/head';
-import {
-  isServerSideErrorProps,
-  ServerSideErrorProps,
-  toServerSideError,
-} from '../../../errors/server-side-error';
+import { ParameterError } from '../../../errors/parameter-error';
 import useToiebaAnswer from '../../../hooks/toieba/use-toieba-answer';
 import { LoggedInUserContext } from '../../_app';
-import style from './answer.module.scss';
-import ContantContainer from '../../../components/container/ContentContainer';
-import SectionContainer from '../../../components/container/SectionContainer';
-import NaviContainer from '../../../components/container/NaviContainer';
-import BackButton from '../../../components/case/back/BackButton';
 
 const api = new NJAPIToiebaApi();
-type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
 interface QueryParam extends ParsedUrlQuery {
   id: string;
+  answerUserId: string;
 }
 
-interface ServerSideSuccessProps {
+interface ServerSideProps {
   toieba: ToiebaDto;
+  answerUserId: string | null;
 }
 
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps,
   QueryParam
-> = async ({ query }) => {
-  const id = query.id as string;
+> = async ({ params, query }) => {
+  const id = params!.id;
 
-  let toieba;
-  try {
-    toieba = await api.getDetail({ id });
-  } catch (error) {
-    return {
-      props: {
-        error: toServerSideError(error),
-      },
-    };
+  if (query.answerUserId && typeof query.answerUserId !== 'string') {
+    throw new ParameterError();
   }
-  return { props: { toieba } };
+
+  const toieba = await api.getDetail({ id });
+  return { props: { answerUserId: query.answerUserId ?? null, toieba } };
 };
 
 const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
   const loggedInUser = useContext(LoggedInUserContext);
 
-  if (isServerSideErrorProps(prop)) {
-    // ToDo: ServerSideError時の処理
-    throw <Error statusCode={prop.error.status} />;
-  }
-
   const toieba = prop.toieba;
   const { answer } = useToiebaAnswer({ toiebaId: toieba.toiebaId });
   const router = useRouter();
+
   const answerHandler = async (choiceId: string) => {
     if (!loggedInUser.userId) {
       return router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
     }
     await answer(choiceId);
-    router.push(`/toieba/${toieba.toiebaId}/total`);
+    goToTotal();
+  };
+
+  const goToTotal = () => {
+    router.push(
+      `/toieba/${toieba.toiebaId}/total` +
+        (prop.answerUserId ? `?answerUserId=${prop.answerUserId}` : '')
+    );
   };
 
   return (
@@ -96,6 +92,15 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
             ))}
           </SelectGroup>
         </ContantContainer>
+        <NaviContainer>
+          <Button text color="black" onClick={() => goToTotal()}>
+            回答せずに集計結果をみる <FontAwesomeIcon icon={faCaretRight} />
+            <FontAwesomeIcon
+              icon={faCaretRight}
+              style={{ marginLeft: '-4px' }}
+            />{' '}
+          </Button>
+        </NaviContainer>
       </SectionContainer>
     </div>
   );

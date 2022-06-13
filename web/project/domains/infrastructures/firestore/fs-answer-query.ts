@@ -1,13 +1,47 @@
 import admin from 'firebase-admin';
 import '../../../api/firebase';
 import {
+  AnswerDto,
   AnswerQuery,
+  GetAnswerOfToiebaByUserId,
   TotalDto,
   TotalParam,
 } from '../../usecases/answer-query-usecase';
 
 export const fsDb = admin.app('toieba').firestore();
 export class FSAnswerQuery implements AnswerQuery {
+  async getAnswerOfToiebaByUserId(
+    param: GetAnswerOfToiebaByUserId
+  ): Promise<AnswerDto | null> {
+    const [answersSnapshot, toiebaSnapshot, userSnapshot] = await Promise.all([
+      fsDb
+        .collection('toieba')
+        .doc(param.toiebaId)
+        .collection('answers')
+        .where('userId', '==', param.answerUserId)
+        .get(),
+      fsDb.collection('toieba').doc(param.toiebaId).get(),
+      fsDb.collection('users').doc(param.answerUserId).get(),
+    ]);
+
+    if (!answersSnapshot.size || !toiebaSnapshot.exists) {
+      return null;
+    }
+
+    const answer = answersSnapshot.docs[0].data();
+
+    const choiceLabel =
+      toiebaSnapshot
+        .data()
+        ?.choices?.find?.(({ choiceId }: any) => choiceId === answer.choiceId)
+        ?.label ?? null;
+    return {
+      ...answer,
+      choiceLabel,
+      userName: userSnapshot.data()?.name ?? null,
+    } as any;
+  }
+
   async total({ toiebaId }: TotalParam): Promise<TotalDto | null> {
     const [toiebaSnapshot, answersSnapshot] = await Promise.all([
       fsDb.collection('toieba').doc(toiebaId).get(),
