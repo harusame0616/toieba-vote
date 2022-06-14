@@ -21,20 +21,20 @@ const ServiceMeta = (prop: Prop) => {
       />
       <meta
         property="og:description"
-        content="といえばボートでは「OOといえばXX」といった連想を投稿・投票するできるSNSです。あなたの連想は多数派？少数派？"
+        content="といえばボートは「OOといえばXX」といった連想を投稿・投票できるSNSです。あなた多数派？少数派？"
       />
       <meta
         property="twitter:description"
-        content="といえばボートは「OOといえばXX」といった連想を投稿・投票するできる連想投稿SNSです。あなたの連想は多数派？少数派？"
+        content="といえばボートは「OOといえばXX」といった連想を投稿・投票できるSNSです。あなた多数派？少数派？"
       />
       <meta property="og:site_name" content="連想投稿SNS！といえばボート" />
       <meta
         property="og:image"
-        content="https://toiebavote.harusame.dev/_next/image?url=%2Flogo.png&w=1080&q=100"
+        content="https://storage.googleapis.com/toiebavote.harusame.dev/images/site-cover.png"
       />
       <meta
         property="twitter:image"
-        content="https://toiebavote.harusame.dev/_next/image?url=%2Flogo.png&w=1080&q=100"
+        content="https://storage.googleapis.com/toiebavote.harusame.dev/images/site-cover.png"
       />
       <meta name="twitter:card" content="summary_large_image" />
     </>
