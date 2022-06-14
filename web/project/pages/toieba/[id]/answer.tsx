@@ -13,6 +13,7 @@ import BackButton from '../../../components/case/back/BackButton';
 import ContantContainer from '../../../components/container/ContentContainer';
 import NaviContainer from '../../../components/container/NaviContainer';
 import SectionContainer from '../../../components/container/SectionContainer';
+import ServiceMeta from '../../../components/domain/service/ServiceMeta';
 import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ToiebaDto } from '../../../domains/usecases/toieba-query-usecase';
 import { ParameterError } from '../../../errors/parameter-error';
@@ -73,6 +74,10 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
           {' '}
           {toieba.theme}といえばの投票 - 連想投稿SNS！といえばボート{' '}
         </title>
+        <ServiceMeta
+          ogUrl={`/toieba/${toieba.toiebaId}/answer?answerUserId=${prop.answerUserId}`}
+          ogTitle={toieba.theme + ' といえばあなたは何を連想する？'}
+        />
       </Head>
       <SectionContainer>
         <ToiebaBand>{toieba?.theme}</ToiebaBand>
