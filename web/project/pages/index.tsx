@@ -54,13 +54,6 @@ const Home: NextPage<ServerSideProps> = (props) => {
 
   return (
     <div className={style.container}>
-      <SectionContainer>
-        <ContentContainer>
-          <h1 className={style.logo}>
-            <ServiceLogo />
-          </h1>
-        </ContentContainer>
-      </SectionContainer>
       {menu.map((item) => (
         <SectionContainer key={item.label}>
           <Band key={item.label}>{item.label}</Band>
