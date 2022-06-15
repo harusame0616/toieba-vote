@@ -26,6 +26,7 @@ import { ParameterError } from '../../../errors/parameter-error';
 import useCommentLike from '../../../hooks/comment/use-comment-like';
 import useCommentList from '../../../hooks/comment/use-comment-list';
 import useCommentPost from '../../../hooks/comment/use-comment-post';
+import useProcessing from '../../../hooks/use-processing';
 import { LoggedInUserContext } from '../../_app';
 import style from './total.module.scss';
 dayjs.extend(utc);
@@ -85,6 +86,7 @@ export const getServerSideProps: GetServerSideProps<
 const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
   const [commentDialog, setCommentDialog] = useState(false);
   const router = useRouter();
+  const { isProcessing, startProcessing } = useProcessing();
 
   const toiebaId = router.query.id;
   if (!toiebaId || typeof toiebaId !== 'string') {
@@ -177,19 +179,22 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
         <ContantContainer>
           <div className={style['comment-list']}>
             <Dialog
+              disabled={isProcessing}
               title="コメントする"
               open={commentDialog}
               onOk={async () => {
-                try {
-                  await postComment();
-                  await refreshCommentList();
-                } catch (err) {
-                  console.error(err);
-                  return;
-                }
-                clearText();
-                error.clear();
-                setCommentDialog(false);
+                await startProcessing(async () => {
+                  try {
+                    await postComment();
+                    await refreshCommentList();
+                  } catch (err) {
+                    console.error(err);
+                    return;
+                  }
+                  clearText();
+                  error.clear();
+                  setCommentDialog(false);
+                });
               }}
               onCancel={() => {
                 clearText();

@@ -18,6 +18,7 @@ import ToiebaBand from '../../../components/domain/toieba/ToiebaBand';
 import { ToiebaDto } from '../../../domains/usecases/toieba-query-usecase';
 import { ParameterError } from '../../../errors/parameter-error';
 import useToiebaAnswer from '../../../hooks/toieba/use-toieba-answer';
+import useProcessing from '../../../hooks/use-processing';
 import { LoggedInUserContext } from '../../_app';
 
 const api = new NJAPIToiebaApi();
@@ -51,13 +52,17 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
   const toieba = prop.toieba;
   const { answer } = useToiebaAnswer({ toiebaId: toieba.toiebaId });
   const router = useRouter();
+  const { isProcessing, startProcessing } = useProcessing();
 
   const answerHandler = async (choiceId: string) => {
-    if (!loggedInUser.userId) {
-      return router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
-    }
-    await answer(choiceId);
-    goToTotal();
+    await startProcessing(async () => {
+      if (!loggedInUser.userId) {
+        router.push(`/auth?to=${encodeURIComponent(router.asPath)}`);
+        return;
+      }
+      await answer(choiceId);
+      goToTotal();
+    });
   };
 
   const goToTotal = () => {
@@ -91,6 +96,7 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
                 index={index}
                 onClick={() => answerHandler(choiceId)}
                 key={label}
+                disabled={isProcessing}
               >
                 {label}
               </SelectItem>

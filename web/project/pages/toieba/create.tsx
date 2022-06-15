@@ -17,6 +17,7 @@ import NaviContainer from '../../components/container/NaviContainer';
 import SectionContainer from '../../components/container/SectionContainer';
 import ToiebaBand from '../../components/domain/toieba/ToiebaBand';
 import useToiebaCreation from '../../hooks/toieba/use-toieba-creation';
+import useProcessing from '../../hooks/use-processing';
 import style from './create.module.scss';
 
 const CreateTheme: NextPage = () => {
@@ -27,7 +28,7 @@ const CreateTheme: NextPage = () => {
   const [saveErrorMessage, setSaveErrorMessage] = useState('');
   const [themeTmp, setThemeTmp] = useState('');
   const [themeErrorMessage, setThemeErrorMessage] = useState('');
-  const [isProcessing, setProcessing] = useState(false);
+  const { isProcessing, startProcessing } = useProcessing();
 
   const toieba = useToiebaCreation();
   const router = useRouter();
@@ -37,16 +38,16 @@ const CreateTheme: NextPage = () => {
   }, []);
 
   const submitHandler: FormEventHandler<HTMLFormElement> = async (e) => {
-    setProcessing(true);
     e.preventDefault();
 
-    try {
-      const { toiebaId } = await toieba.save();
-      await router.push(`/toieba/${toiebaId}/answer`);
-    } catch (err: any) {
-      setSaveErrorMessage(err.data.message);
-    }
-    setProcessing(false);
+    await startProcessing(async () => {
+      try {
+        const { toiebaId } = await toieba.save();
+        await router.push(`/toieba/${toiebaId}/answer`);
+      } catch (err: any) {
+        setSaveErrorMessage(err.data.message);
+      }
+    });
   };
 
   const validateTheme = () => {
@@ -81,6 +82,7 @@ const CreateTheme: NextPage = () => {
         <ToiebaBand>
           <div className={style['theme-input']}>
             <input
+              disabled={isProcessing}
               type="text"
               onChange={(e) => setThemeTmp(e.target.value)}
               onBlur={validateTheme}
@@ -98,35 +100,40 @@ const CreateTheme: NextPage = () => {
             <div className={style['choice-input']}>
               <input
                 ref={choiceInputRef}
-                disabled={!toieba.canAddChoice}
+                disabled={!toieba.canAddChoice || isProcessing}
                 onChange={(e) => setNewChoiceLabel(e.target.value)}
                 value={newChoiceLabel}
               />
               <AddButton
-                disabled={!toieba.canAddChoice}
+                disabled={!toieba.canAddChoice || isProcessing}
                 onClick={addChoiceHandler}
               />
               <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
             </div>
 
             {toieba.choices.map(({ index, label }) => (
-              <SelectItem key={label} index={index}>
+              <SelectItem key={label} index={index} disabled={isProcessing}>
                 <div className={style.text}>{label}</div>
                 <div className={style.actions}>
                   <span className={style['button-wrap']}>
                     <UpButton
                       onClick={() => toieba.swapChoiceOrder(index, index - 1)}
-                      disabled={index == 0}
+                      disabled={index == 0 || isProcessing}
                     />
                   </span>
                   <span className={style['button-wrap']}>
                     <DownButton
                       onClick={() => toieba.swapChoiceOrder(index, index + 1)}
-                      disabled={index == toieba.choices.length - 1}
+                      disabled={
+                        index == toieba.choices.length - 1 || isProcessing
+                      }
                     />
                   </span>
                   <span className={style['delete-wrap']}>
-                    <DeleteButton onClick={() => toieba.deleteChoice(index)} />
+                    <DeleteButton
+                      onClick={() => toieba.deleteChoice(index)}
+                      disabled={isProcessing}
+                    />
                   </span>
                 </div>
               </SelectItem>

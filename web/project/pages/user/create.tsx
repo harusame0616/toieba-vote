@@ -12,6 +12,7 @@ import NaviContainer from '../../components/container/NaviContainer';
 import SectionContainer from '../../components/container/SectionContainer';
 import UserEditForm from '../../components/domain/user/UserEditForm';
 import { ParameterError } from '../../errors/parameter-error';
+import useProcessing from '../../hooks/use-processing';
 import { AuthContext } from '../_app';
 import style from './create.module.scss';
 
@@ -45,20 +46,17 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async ({
 };
 
 const CreateUser: NextPage<ServerSideProps> = (param) => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const auth = useContext(AuthContext);
+  const { isProcessing, startProcessing } = useProcessing();
 
   const create = async (profile: UserProfile) => {
-    const userApi = new NJAPIUserApi();
-    setIsLoading(true);
-    try {
+    await startProcessing(async () => {
+      const userApi = new NJAPIUserApi();
       await userApi.createUser(profile, param.authenticationId);
-    } finally {
-      setIsLoading(false);
-    }
 
-    location.href = decodeURIComponent(param.to);
+      location.href = decodeURIComponent(param.to);
+    });
   };
 
   return auth ? (
@@ -80,14 +78,14 @@ const CreateUser: NextPage<ServerSideProps> = (param) => {
         <ContentContainer>
           <UserEditForm
             defaultProfile={param.defaultProfile}
-            isLoading={isLoading}
+            isLoading={isProcessing}
             onSubmit={async (e, userProfile) => {
               e.preventDefault();
               await create(userProfile);
             }}
           >
             <div className={style.action}>
-              <PrimaryButton type="submit" disabled={isLoading}>
+              <PrimaryButton type="submit" disabled={isProcessing}>
                 登録する
               </PrimaryButton>
             </div>
