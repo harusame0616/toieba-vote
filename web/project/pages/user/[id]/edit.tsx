@@ -8,6 +8,9 @@ import { NJAPIUserApi } from '../../../api/user-api/next-js-api-user-api';
 import Band from '../../../components/base/Band';
 import BackButton from '../../../components/case/back/BackButton';
 import PrimaryButton from '../../../components/case/primary/PrimaryButton';
+import ContentContainer from '../../../components/container/ContentContainer';
+import NaviContainer from '../../../components/container/NaviContainer';
+import SectionContainer from '../../../components/container/SectionContainer';
 import UserEditForm from '../../../components/domain/user/UserEditForm';
 import style from './edit.module.scss';
 
@@ -60,26 +63,28 @@ const UserEdit: NextPage<ServerSideProps> = ({ userId, currentProfile }) => {
         <title>プロフィール編集 - 連想投稿SNS！といえばボート</title>
         <meta name="robots" content="noindex" key="robots" />
       </Head>
-      <Band>プロフィール編集</Band>
-      <div className={style['form-wrap']}>
-        <div className={style.navi}>
+      <SectionContainer>
+        <Band>プロフィール編集</Band>
+        <NaviContainer>
           <BackButton onClick={() => goBack()} />
-        </div>
-        <UserEditForm
-          defaultProfile={currentProfile}
-          isLoading={isLoading}
-          onSubmit={(event, profile) => {
-            update(profile);
-            event.preventDefault();
-          }}
-        >
-          <div className={style.action}>
-            <PrimaryButton type="submit" disabled={isLoading}>
-              プロフィールを更新する
-            </PrimaryButton>
-          </div>
-        </UserEditForm>
-      </div>
+        </NaviContainer>
+        <ContentContainer>
+          <UserEditForm
+            defaultProfile={currentProfile}
+            isLoading={isLoading}
+            onSubmit={(event, profile) => {
+              update(profile);
+              event.preventDefault();
+            }}
+          >
+            <div className={style.action}>
+              <PrimaryButton type="submit" disabled={isLoading}>
+                プロフィールを更新する
+              </PrimaryButton>
+            </div>
+          </UserEditForm>
+        </ContentContainer>
+      </SectionContainer>
     </div>
   );
 };
