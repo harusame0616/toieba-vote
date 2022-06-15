@@ -10,6 +10,7 @@ interface DialogParam extends HTMLAttributes<HTMLDivElement> {
   width?: string;
   open: boolean;
   title?: string;
+  disabled?: boolean;
 }
 
 const Dialog = ({
@@ -20,6 +21,7 @@ const Dialog = ({
   height = '100%',
   width = '100%',
   title = '',
+  disabled = false,
   ...prop
 }: DialogParam) => {
   useEffect(() => {
@@ -39,10 +41,18 @@ const Dialog = ({
         <div className={style.title}>{title}</div>
         <div className={style.body}>{children}</div>
         <div className={style.action}>
-          <SecondaryButton onClick={() => onCancel()} className={style.cancel}>
+          <SecondaryButton
+            disabled={disabled}
+            onClick={() => onCancel()}
+            className={style.cancel}
+          >
             キャンセル
           </SecondaryButton>
-          <PrimaryButton onClick={() => onOk()} className={style.ok}>
+          <PrimaryButton
+            disabled={disabled}
+            onClick={() => onOk()}
+            className={style.ok}
+          >
             OK
           </PrimaryButton>
         </div>

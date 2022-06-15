@@ -1,17 +1,16 @@
-import { DetailedHTMLProps, HTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, DetailedHTMLProps, HTMLAttributes } from 'react';
 import style from './SelectItem.module.scss';
 
-interface Prop
-  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+interface Prop extends ButtonHTMLAttributes<HTMLButtonElement> {
   index: number;
 }
 
 const SelectItem = ({ children, index, ...rest }: Prop) => {
   return (
-    <div {...rest} className={style.container}>
+    <button {...rest} className={style.container}>
       <div className={style.index}>{index + 1}</div>
       <div className={style.label}>{children}</div>
-    </div>
+    </button>
   );
 };
 
