@@ -58,13 +58,15 @@ const Home: NextPage<ServerSideProps> = (props) => {
         <SectionContainer key={item.label}>
           <Band key={item.label}>{item.label}</Band>
           <ContentContainer>
-            {item.list.map((toieba) => (
-              <div className={style['item']} key={toieba.toiebaId}>
-                <Link href={`/toieba/${toieba.toiebaId}/answer`}>
-                  <a>{toieba.theme} といえば</a>
-                </Link>
-              </div>
-            ))}
+            <div className={style['item-wrap']}>
+              {item.list.map((toieba) => (
+                <div className={style['item']} key={toieba.toiebaId}>
+                  <Link href={`/toieba/${toieba.toiebaId}/answer`}>
+                    <a>{toieba.theme} といえば</a>
+                  </Link>
+                </div>
+              ))}
+            </div>
           </ContentContainer>
         </SectionContainer>
       ))}

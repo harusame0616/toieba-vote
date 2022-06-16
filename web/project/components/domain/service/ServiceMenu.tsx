@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import useDisplayType from '../../../hooks/useDisplayType';
 import PrimaryButton from '../../case/primary/PrimaryButton';
 import SecondaryButton from '../../case/secondary/SecondaryButton';
 import UserMenu from '../user/UserMenu';
@@ -20,11 +21,13 @@ interface HeaderMenuProp {
 }
 
 const HeaderMenu = (prop: HeaderMenuProp) => {
+  const { display } = useDisplayType();
+
   return (
     <header className={style.header}>
       <div className={style.logo}>
         <div className={style['logo-wrap']}>
-          <ServiceLogo />
+          <ServiceLogo mobile={display === 'sp'} />
         </div>
       </div>
       <div className={style.action}>

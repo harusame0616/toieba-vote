@@ -5,8 +5,12 @@ import RoundButton from '../../base/RoundButton';
 
 const UserEditButton = (prop: ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
-    <RoundButton {...prop} outline>
-      <FontAwesomeIcon icon={faUserEdit} />
+    <RoundButton {...prop} outline size="large">
+      <FontAwesomeIcon
+        icon={faUserEdit}
+        size="xs"
+        style={{ marginLeft: '8px' }}
+      />
     </RoundButton>
   );
 };

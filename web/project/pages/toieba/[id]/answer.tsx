@@ -105,11 +105,13 @@ const ToiebaAnswer: NextPage<ServerSideProps> = (prop) => {
         </ContantContainer>
         <NaviContainer>
           <Button text color="black" onClick={() => goToTotal()}>
-            回答せずに集計結果をみる <FontAwesomeIcon icon={faCaretRight} />
-            <FontAwesomeIcon
-              icon={faCaretRight}
-              style={{ marginLeft: '-4px' }}
-            />{' '}
+            <div>
+              回答せずに集計結果をみる <FontAwesomeIcon icon={faCaretRight} />
+              <FontAwesomeIcon
+                icon={faCaretRight}
+                style={{ marginLeft: '-4px' }}
+              />
+            </div>
           </Button>
         </NaviContainer>
       </SectionContainer>

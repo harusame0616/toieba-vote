@@ -88,6 +88,7 @@ const CreateTheme: NextPage = () => {
               onBlur={validateTheme}
               value={themeTmp}
               ref={themeInputRef}
+              style={{ color: 'black' }}
             />
             <ErrorMessage>{themeErrorMessage}</ErrorMessage>
           </div>
@@ -104,12 +105,15 @@ const CreateTheme: NextPage = () => {
                 onChange={(e) => setNewChoiceLabel(e.target.value)}
                 value={newChoiceLabel}
               />
-              <AddButton
-                disabled={!toieba.canAddChoice || isProcessing}
-                onClick={addChoiceHandler}
-              />
-              <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
+              <div className={style['add-wrap']}>
+                <AddButton
+                  disabled={!toieba.canAddChoice || isProcessing}
+                  onClick={addChoiceHandler}
+                  width="100%"
+                />
+              </div>
             </div>
+            <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
 
             {toieba.choices.map(({ index, label }) => (
               <SelectItem key={label} index={index} disabled={isProcessing}>

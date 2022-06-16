@@ -7,7 +7,14 @@ interface BackButton extends ButtonProp {}
 const BackButton = (prop: BackButton) => {
   return (
     <Button text color="black" {...prop}>
-      <FontAwesomeIcon icon={faCaretLeft} style={{ marginLeft: '-5px' }} /> 戻る
+      <div>
+        <FontAwesomeIcon
+          icon={faCaretLeft}
+          style={{ marginLeft: '-5px' }}
+          size="1x"
+        />{' '}
+        戻る
+      </div>
     </Button>
   );
 };

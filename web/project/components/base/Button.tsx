@@ -6,6 +6,8 @@ export interface ButtonProp extends ButtonHTMLAttributes<HTMLButtonElement> {
   color?: string;
   outline?: boolean;
   text?: boolean;
+  width?: string;
+  height?: string;
 }
 
 const Button = ({
@@ -14,6 +16,8 @@ const Button = ({
   type = 'button',
   outline = false,
   text = false,
+  width = 'auto',
+  height = 'auto',
   children,
   ...rest
 }: ButtonProp) => {
@@ -23,7 +27,10 @@ const Button = ({
     borderColor: background,
     borderWidth: text ? 0 : 1,
     boxShadow: text ? undefined : '1px 1px 2px rgb(0 0 0 / 40%)',
+    width,
+    height,
   };
+
   return (
     <button
       {...rest}

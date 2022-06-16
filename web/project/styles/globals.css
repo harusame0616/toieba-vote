@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=M+PLUS+Rounded+1c');
+@import url('https://cdn.jsdelivr.net/npm/destyle.css@1.0.15/destyle.css');
 
 html,
 body {
@@ -36,4 +37,13 @@ a {
   --color-3: #00adb5;
   --color-4: #eee;
   --color-5: rgb(58, 128, 156);
+}
+
+input,
+textarea {
+  padding: 0.5rem 0.5rem;
+  font-size: 1rem;
+  background: white;
+  border-radius: 1px;
+  border: 1px solid grey;
 }

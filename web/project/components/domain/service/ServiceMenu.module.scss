@@ -3,13 +3,15 @@
   flex-shrink: 0;
   display: flex;
   height: 80px;
-  padding: 5px 40px;
+  padding: 5px 5px;
 
   .logo {
     flex-grow: 1;
+    display: flex;
+    align-items: stretch;
 
     .logo-wrap {
-      width: 200px;
+      max-width: 200px;
     }
   }
 

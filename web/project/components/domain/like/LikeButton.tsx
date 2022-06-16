@@ -50,6 +50,7 @@ const LikeButton = (param: LikeButtonParam) => {
           color="#ff5050"
           shake={isShaked}
           beat={isBeatted}
+          size="1x"
         />
       </div>
       <div className={style['count-wrap']}>

@@ -1,13 +1,12 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ButtonHTMLAttributes } from 'react';
-import SquareButton from '../../base/SquareButton';
+import PrimaryButton, { PrimaryButtonProp } from '../primary/PrimaryButton';
 
-const AddButton = (prop: ButtonHTMLAttributes<HTMLButtonElement>) => {
+const AddButton = (prop: PrimaryButtonProp) => {
   return (
-    <SquareButton {...prop} background={'green'} color={'white'}>
+    <PrimaryButton {...prop}>
       <FontAwesomeIcon icon={faPlus} />
-    </SquareButton>
+    </PrimaryButton>
   );
 };
 
