@@ -1,9 +1,16 @@
 .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+
+
   cursor: pointer;
   border: 1px solid;
   border-radius: 3px;
-  padding: 5px;
+  padding: 0.5rem;
   font-weight: bold;
+  font-size: 0.8rem;
 
   &:disabled {
     cursor: not-allowed;

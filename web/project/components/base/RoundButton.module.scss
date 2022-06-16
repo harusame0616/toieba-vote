@@ -1,9 +1,17 @@
 .container {
   width: 30px;
   height: 30px;
+
+  &.large {
+    width: 45px;
+    height: 45px;
+  }
   border: solid 1px black;
   border-radius: 25px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   &:disabled {
     cursor: not-allowed;

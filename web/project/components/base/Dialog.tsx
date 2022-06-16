@@ -26,6 +26,10 @@ const Dialog = ({
 }: DialogParam) => {
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : 'auto';
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, [open]);
 
   return (

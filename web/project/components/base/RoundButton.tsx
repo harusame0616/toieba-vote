@@ -1,10 +1,13 @@
 import { ButtonHTMLAttributes } from 'react';
 import style from './RoundButton.module.scss';
 
+const sizeList = ['normal', 'large'] as const;
+type Size = typeof sizeList[number];
 interface Prop extends ButtonHTMLAttributes<HTMLButtonElement> {
   background?: string;
   color?: string;
   outline?: boolean;
+  size?: Size;
 }
 
 const RoundButton = ({
@@ -12,6 +15,7 @@ const RoundButton = ({
   color = 'white',
   type = 'button',
   outline = false,
+  size = 'normal',
   children,
   ...rest
 }: Prop) => {
@@ -20,12 +24,13 @@ const RoundButton = ({
     background: outline ? 'inherit' : background,
     borderColor: background,
   };
+  const sizeStyle = size === 'large' ? style.large : null;
 
   return (
     <button
       {...rest}
       type={type}
-      className={style.container}
+      className={`${style.container} ${sizeStyle}`}
       style={computedStyle}
     >
       {children}

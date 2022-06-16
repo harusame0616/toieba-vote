@@ -1,10 +1,16 @@
 .container {
   .choice-input {
     display: flex;
-    flex-wrap: wrap;
 
     input {
       flex-grow: 1;
+    }
+
+    .add-wrap {
+      flex-shrink: 0;
+      width: 35px;
+      display: flex;
+      align-items: stretch;
     }
   }
 
@@ -16,6 +22,7 @@
   }
 
   .actions {
+    display: flex;
     justify-self: flex-end;
     flex-grow: 0;
     flex-shrink: 0;
