@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 const displayList = ['sp', 'tb', 'pc'] as const;
 type Display = typeof displayList[number];
 
-
 const useDisplayType = () => {
   const [display, setDisplay] = useState<Display>('sp');
 
@@ -11,21 +10,26 @@ const useDisplayType = () => {
     let timerId: ReturnType<typeof setTimeout>;
 
     const updateDisplayType = () => {
+      if (window.innerWidth < 760) {
+        setDisplay('sp');
+      } else if (window.innerWidth < 980) {
+        setDisplay('tb');
+      } else {
+        setDisplay('pc');
+      }
+    };
+
+    const resizeHandler = () => {
       clearTimeout(timerId);
       timerId = setTimeout(() => {
-        if (window.innerWidth < 760) {
-          setDisplay('sp');
-        } else if (window.innerWidth < 980) {
-          setDisplay('tb');
-        } else {
-          setDisplay('pc');
-        }
+        updateDisplayType();
       }, 400);
     };
 
-    window.addEventListener('resize', updateDisplayType);
+    updateDisplayType();
+    window.addEventListener('resize', resizeHandler);
     return () => {
-      window.removeEventListener('resize', updateDisplayType);
+      window.removeEventListener('resize', resizeHandler);
     };
   }, []);
 
