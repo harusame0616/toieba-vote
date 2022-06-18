@@ -8,10 +8,13 @@
 
     .add-wrap {
       flex-shrink: 0;
-      width: 35px;
       display: flex;
       align-items: stretch;
     }
+  }
+
+  .select-item-wrap {
+    margin-bottom: 10px;
   }
 
   .text {

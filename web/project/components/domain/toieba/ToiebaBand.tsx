@@ -1,3 +1,4 @@
+import { Box } from '@mui/material';
 import { ReactNode } from 'react';
 import Band from '../../base/Band';
 
@@ -8,7 +9,7 @@ interface Prop {
 const ToiebaBand = ({ children }: Prop) => {
   return (
     <Band>
-      <div>{children}</div>
+      <Box sx={{ wordBreak: 'break-all', minWidth: '0' }}>{children}</Box>
       <div>といえば・・・</div>
     </Band>
   );

@@ -1,3 +1,4 @@
+import { ButtonBase } from '@mui/material';
 import { ButtonHTMLAttributes } from 'react';
 import style from './SelectItem.module.scss';
 
@@ -7,10 +8,10 @@ interface Prop extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const SelectItem = ({ children, index, ...rest }: Prop) => {
   return (
-    <button {...rest} type="button" className={style.container}>
+    <ButtonBase {...rest} type="button" className={style.container}>
       <div className={style.index}>{index + 1}</div>
       <div className={style.label}>{children}</div>
-    </button>
+    </ButtonBase>
   );
 };
 

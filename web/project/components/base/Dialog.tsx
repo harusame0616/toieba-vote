@@ -1,8 +1,8 @@
+import { Modal } from '@mui/material';
 import { DialogHTMLAttributes, HTMLAttributes, useEffect } from 'react';
 import PrimaryButton from '../case/primary/PrimaryButton';
 import SecondaryButton from '../case/secondary/SecondaryButton';
 import style from './Dialog.module.scss';
-
 interface DialogParam extends HTMLAttributes<HTMLDivElement> {
   onCancel: () => Promise<void> | void;
   onOk: () => Promise<void> | void;
@@ -24,19 +24,8 @@ const Dialog = ({
   disabled = false,
   ...prop
 }: DialogParam) => {
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : 'auto';
-
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [open]);
-
   return (
-    <div
-      className={style.container}
-      style={{ display: open ? undefined : 'none' }}
-    >
+    <Modal className={style.container} open={open}>
       <div
         {...prop}
         className={style.dialog}
@@ -48,20 +37,20 @@ const Dialog = ({
           <SecondaryButton
             disabled={disabled}
             onClick={() => onCancel()}
-            className={style.cancel}
+            className={style.button}
           >
             キャンセル
           </SecondaryButton>
           <PrimaryButton
             disabled={disabled}
             onClick={() => onOk()}
-            className={style.ok}
+            className={style.button}
           >
-            OK
+            コメントする
           </PrimaryButton>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 export default Dialog;

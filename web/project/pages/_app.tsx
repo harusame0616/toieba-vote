@@ -1,3 +1,5 @@
+import { Box, Container, createTheme, ThemeProvider } from '@mui/material';
+import { amber, cyan } from '@mui/material/colors';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -10,6 +12,14 @@ import { useAuth } from '../hooks/useAuth';
 import { http } from '../library/http';
 import '../styles/globals.css';
 import style from './_app.module.scss';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#3a809c',
+    },
+  },
+});
 
 interface NoLoggedInUser {
   userId: null;
@@ -67,31 +77,39 @@ function MyApp({ Component, pageProps }: AppProps) {
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
-          {/* <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/destyle.css@1.0.15/destyle.css"
-          /> */}
         </Head>
         <div
           className={style.container}
           onClick={() => setUserMenuIsOpen(false)}
         >
-          <ServiceMenu
-            user={loggedInUser}
-            menuState={[userMenuIsOpen, setUserMenuIsOpen]}
-            onLogin={() => router.push('/auth')}
-            onToiebaCreate={() => {
-              const toiebaCreatePath = '/toieba/create';
+          <ThemeProvider theme={theme}>
+            <ServiceMenu
+              user={loggedInUser}
+              menuState={[userMenuIsOpen, setUserMenuIsOpen]}
+              onLogin={() => router.push('/auth')}
+              onToiebaCreate={() => {
+                const toiebaCreatePath = '/toieba/create';
 
-              router.push(
-                auth.isLoggedIn()
-                  ? toiebaCreatePath
-                  : `/auth?to=${encodeURIComponent(toiebaCreatePath)}`
-              );
-            }}
-          />
+                router.push(
+                  auth.isLoggedIn()
+                    ? toiebaCreatePath
+                    : `/auth?to=${encodeURIComponent(toiebaCreatePath)}`
+                );
+              }}
+            />
 
-          <Component {...pageProps} />
+            <Box
+              marginTop="100px"
+              sx={{
+                flexGrow: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                maxWidth: '100%',
+              }}
+            >
+              <Component {...pageProps} />
+            </Box>
+          </ThemeProvider>
         </div>
       </LoggedInUserContext.Provider>
     </AuthContext.Provider>

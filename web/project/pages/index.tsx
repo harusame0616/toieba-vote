@@ -1,23 +1,21 @@
+import { faClock, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, Tab, Tabs } from '@mui/material';
 import type { GetServerSideProps, NextPage } from 'next';
-import Error from 'next/error';
-import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { NJAPIToiebaApi } from '../api/toieba-api/next-js-api-toieba-api';
 import Band from '../components/base/Band';
 import ContentContainer from '../components/container/ContentContainer';
 import SectionContainer from '../components/container/SectionContainer';
-import ServiceLogo from '../components/domain/service/ServiceLogo';
+import ToiebaListItem from '../components/domain/toieba/ToiebaListItem';
 import { ToiebaBriefDto } from '../domains/usecases/toieba-query-usecase';
-import {
-  isServerSideErrorProps,
-  ServerSideErrorProps,
-} from '../errors/server-side-error';
 import style from './index.module.scss';
 
-interface ServerSideSuccessProps {
+interface ServerSideProps {
   latest: ToiebaBriefDto[];
   popular: ToiebaBriefDto[];
 }
-type ServerSideProps = ServerSideSuccessProps | ServerSideErrorProps;
 
 const api = new NJAPIToiebaApi();
 export const getServerSideProps: GetServerSideProps<
@@ -37,39 +35,55 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 const Home: NextPage<ServerSideProps> = (props) => {
-  if (isServerSideErrorProps(props)) {
-    return <Error statusCode={props.error.status} />;
-  }
+  const router = useRouter();
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const menu = [
     {
-      label: '新着のといえば',
+      label: '新着',
       list: props.latest,
+      icon: <FontAwesomeIcon icon={faClock} />,
     },
     {
-      label: '人気のといえば',
+      label: '人気',
       list: props.popular,
+      icon: <FontAwesomeIcon icon={faTrophy} />,
     },
   ];
 
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setCurrentIndex(newValue);
+  };
+
+  const goToToieba = (id: string) => {
+    router.push(`/toieba/${id}/answer`);
+  };
+
   return (
     <div className={style.container}>
-      {menu.map((item) => (
-        <SectionContainer key={item.label}>
-          <Band key={item.label}>{item.label}</Band>
-          <ContentContainer>
-            <div className={style['item-wrap']}>
-              {item.list.map((toieba) => (
-                <div className={style['item']} key={toieba.toiebaId}>
-                  <Link href={`/toieba/${toieba.toiebaId}/answer`}>
-                    <a>{toieba.theme} といえば</a>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </ContentContainer>
-        </SectionContainer>
-      ))}
+      <Tabs value={currentIndex} onChange={handleChange} centered>
+        {menu.map((item) => (
+          <Tab label={item.label} key={item.label} icon={item.icon} />
+        ))}
+      </Tabs>
+      <SectionContainer key={menu[currentIndex].label}>
+        <Band key={menu[currentIndex].label}>{menu[currentIndex].label}</Band>
+        <ContentContainer>
+          <div className={style['item-wrap']}>
+            {menu[currentIndex].list.map((toieba) => (
+              <Button
+                key={toieba.toiebaId}
+                className={style['item']}
+                onClick={() => {
+                  goToToieba(toieba.toiebaId);
+                }}
+              >
+                <ToiebaListItem toieba={toieba} />
+              </Button>
+            ))}
+          </div>
+        </ContentContainer>
+      </SectionContainer>
     </div>
   );
 };

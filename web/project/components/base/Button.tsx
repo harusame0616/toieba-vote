@@ -1,3 +1,4 @@
+import { Button as MUButton, SxProps } from '@mui/material';
 import { ButtonHTMLAttributes } from 'react';
 import style from './Button.module.scss';
 
@@ -8,6 +9,7 @@ export interface ButtonProp extends ButtonHTMLAttributes<HTMLButtonElement> {
   text?: boolean;
   width?: string;
   height?: string;
+  sx?: SxProps;
 }
 
 const Button = ({
@@ -16,8 +18,7 @@ const Button = ({
   type = 'button',
   outline = false,
   text = false,
-  width = 'auto',
-  height = 'auto',
+  sx = {},
   children,
   ...rest
 }: ButtonProp) => {
@@ -26,20 +27,18 @@ const Button = ({
     background: outline || text ? 'inherit' : background,
     borderColor: background,
     borderWidth: text ? 0 : 1,
-    boxShadow: text ? undefined : '1px 1px 2px rgb(0 0 0 / 40%)',
-    width,
-    height,
   };
 
   return (
-    <button
+    <MUButton
       {...rest}
       type={type}
       className={style.container}
       style={computedStyle}
+      sx={{ boxShadow: text ? undefined : 4, ...sx }}
     >
       {children}
-    </button>
+    </MUButton>
   );
 };
 
