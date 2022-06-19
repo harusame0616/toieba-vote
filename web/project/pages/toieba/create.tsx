@@ -1,4 +1,4 @@
-import { Box, Collapse, Input } from '@mui/material';
+import { Box, Collapse, Input, TextField } from '@mui/material';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -83,7 +83,7 @@ const CreateTheme: NextPage = () => {
       <SectionContainer>
         <ToiebaBand>
           <div className={style['theme-input']}>
-            <Input
+            <TextField
               disabled={isProcessing}
               type="text"
               onChange={(e) => setThemeTmp(e.target.value)}
@@ -92,7 +92,9 @@ const CreateTheme: NextPage = () => {
               ref={themeInputRef}
               style={{ color: 'black' }}
               placeholder="例：おにぎりの具"
-              sx={{ color: 'white' }}
+              variant="standard"
+              fullWidth
+              sx={{ background: 'white', maxWidth: '380px' }}
             />
             <ErrorMessage>{themeErrorMessage}</ErrorMessage>
           </div>
