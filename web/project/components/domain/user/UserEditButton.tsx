@@ -7,7 +7,7 @@ type Prop = React.ComponentProps<typeof IconButton>;
 IconButton;
 const UserEditButton = (prop: Prop) => {
   return (
-    <IconButton {...prop}>
+    <IconButton {...prop} color="primary">
       <FontAwesomeIcon icon={faUserEdit} size="xs" />
     </IconButton>
   );

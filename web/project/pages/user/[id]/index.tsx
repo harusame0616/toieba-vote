@@ -1,4 +1,5 @@
-import { Button } from '@mui/material';
+import { ThemeContext } from '@emotion/react';
+import { Box, Button } from '@mui/material';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -16,7 +17,6 @@ import { ToiebaBriefDto } from '../../../domains/usecases/toieba-query-usecase';
 import { UserDto } from '../../../domains/usecases/user-query-usecase';
 import { ParameterError } from '../../../errors/parameter-error';
 import { LoggedInUserContext } from '../../_app';
-import style from './index.module.scss';
 
 interface ServerSideProps {
   user: UserDto;
@@ -53,6 +53,7 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
   const loggedInUser = useContext(LoggedInUserContext);
   const [canEditProfile, setCanEditProfile] = useState(false);
 
+  const theme: any = useContext(ThemeContext);
   useEffect(() => {
     setCanEditProfile(router.query.id === loggedInUser.userId);
   }, [loggedInUser.userId, router.query.id]);
@@ -63,7 +64,7 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
 
   const { user, answeredToiebaList } = props;
   return (
-    <div className={style.container}>
+    <div>
       <Head>
         <title>
           {user.name}さんのプロフィール - 連想投稿SNS！といえばボート
@@ -76,41 +77,48 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
           <BackButton onClick={() => router.back()} />
         </NaviContainer>
         <ContentContainer>
-          <div className={style.profile}>
-            <div className={style.name}>
-              {user.name}
-              {canEditProfile ? (
-                <UserEditButton onClick={goToProfileEdit} />
-              ) : null}
-            </div>
-            <div className={style.comment}>
-              {user.comment.length > 0 ? user.comment : ''}
-            </div>
-          </div>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            align-items="center"
+            fontSize="2rem"
+            padding-bottom="2px"
+            paddingX="0.5rem"
+            borderBottom={`2px solid ${theme?.palette?.primary?.main}`}
+            marginBottom="20px"
+            sx={{ wordBreak: 'break-all' }}
+          >
+            {user.name}
+            {canEditProfile ? (
+              <UserEditButton onClick={goToProfileEdit} />
+            ) : null}
+          </Box>
+          <Box whiteSpace="pre-wrap" sx={{ wordBreak: 'break-all' }}>
+            {user.comment.length > 0 ? user.comment : ''}
+          </Box>
         </ContentContainer>
       </SectionContainer>
 
       <SectionContainer>
         <Band>回答済みの「といえば」</Band>
         <ContentContainer>
-          <div className={style.list}>
-            {answeredToiebaList.length ? (
-              answeredToiebaList.map((toieba) => (
-                <Button
-                  key={toieba.toiebaId}
-                  onClick={() => {
-                    router.push(
-                      `/toieba/${toieba.toiebaId}/answer?answerUserId=${props.userId}`
-                    );
-                  }}
-                >
-                  <ToiebaListItem toieba={toieba} />
-                </Button>
-              ))
-            ) : (
-              <div>まだ回答していません。</div>
-            )}
-          </div>
+          {answeredToiebaList.length ? (
+            answeredToiebaList.map((toieba) => (
+              <Button
+                fullWidth
+                key={toieba.toiebaId}
+                onClick={() => {
+                  router.push(
+                    `/toieba/${toieba.toiebaId}/answer?answerUserId=${props.userId}`
+                  );
+                }}
+              >
+                <ToiebaListItem toieba={toieba} />
+              </Button>
+            ))
+          ) : (
+            <div>まだ回答していません。</div>
+          )}
         </ContentContainer>
       </SectionContainer>
     </div>
