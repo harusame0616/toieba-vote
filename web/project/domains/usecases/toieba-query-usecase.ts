@@ -12,6 +12,9 @@ export interface ChoiceDto {
 export interface ToiebaBriefDto {
   toiebaId: string;
   theme: string;
+  postedAt: string;
+  commentCount: number;
+  voteCount: number;
 }
 
 export interface AnsweredByUserParam {

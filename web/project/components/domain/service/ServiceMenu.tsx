@@ -19,9 +19,8 @@ type User =
   | {
       userId: string;
       name: string;
-      icon: string;
     }
-  | { userId: null; name: null; icon: null };
+  | { userId: null; name: null };
 
 interface HeaderMenuProp {
   onLogin: () => any | Promise<any>;
@@ -53,7 +52,6 @@ const HeaderMenu = (prop: HeaderMenuProp) => {
               <div className={style['user-wrap']}>
                 <Avatar
                   sx={{ backgroundColor: theme?.palette?.primary?.main }}
-                  src={prop.user.icon}
                   onClick={(e) => {
                     e.stopPropagation();
                     prop.menuState[1](true);
