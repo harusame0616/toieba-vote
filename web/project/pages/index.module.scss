@@ -4,9 +4,9 @@
     flex-direction: column;
     gap: 8px;
 
-    .item {
+    .item-footer {
       display: flex;
-      justify-content: center;
+      gap: 10px;
     }
   }
 }

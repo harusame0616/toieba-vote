@@ -3,6 +3,7 @@
   border-radius: 5px;
   padding: 0;
   box-shadow: 3px 3px 10px black;
+  transition: all 1s;
 
   background: linear-gradient(
     to bottom,
@@ -36,6 +37,7 @@
 
     &:hover {
       background: var(--color-5);
+      transition: all 0.3s;
     }
 
     &:active {

@@ -1,7 +1,9 @@
+import { Collapse } from '@mui/material';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { FormEventHandler, useEffect, useRef, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 import SelectGroup from '../../components/base/SelectGroup';
 import SelectItem from '../../components/base/SelectItem';
 import AddButton from '../../components/case/add/AddButton';
@@ -9,8 +11,7 @@ import BackButton from '../../components/case/back/BackButton';
 import DeleteButton from '../../components/case/delete/DeleteButton';
 import DownButton from '../../components/case/down/DownButton';
 import ErrorMessage from '../../components/case/error/ErrorMessage';
-import PrimaryButton from '../../components/case/primary/PrimaryButton';
-import UpButton from '../../components/case/up/UpButton';
+import PrimaryButton from '../../components/case/primary/PrimaryButton'; import UpButton from '../../components/case/up/UpButton';
 import ActionContainer from '../../components/container/ActionContainer';
 import ContentContainer from '../../components/container/ContentContainer';
 import NaviContainer from '../../components/container/NaviContainer';
@@ -89,6 +90,7 @@ const CreateTheme: NextPage = () => {
               value={themeTmp}
               ref={themeInputRef}
               style={{ color: 'black' }}
+              placeholder="例：おにぎりの具"
             />
             <ErrorMessage>{themeErrorMessage}</ErrorMessage>
           </div>
@@ -98,50 +100,62 @@ const CreateTheme: NextPage = () => {
         </NaviContainer>
         <ContentContainer>
           <SelectGroup>
+            選択肢
             <div className={style['choice-input']}>
               <input
                 ref={choiceInputRef}
                 disabled={!toieba.canAddChoice || isProcessing}
                 onChange={(e) => setNewChoiceLabel(e.target.value)}
                 value={newChoiceLabel}
+                placeholder="例：しゃけ"
               />
               <div className={style['add-wrap']}>
                 <AddButton
                   disabled={!toieba.canAddChoice || isProcessing}
                   onClick={addChoiceHandler}
-                  width="100%"
                 />
               </div>
             </div>
             <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
-
-            {toieba.choices.map(({ index, label }) => (
-              <SelectItem key={label} index={index} disabled={isProcessing}>
-                <div className={style.text}>{label}</div>
-                <div className={style.actions}>
-                  <span className={style['button-wrap']}>
-                    <UpButton
-                      onClick={() => toieba.swapChoiceOrder(index, index - 1)}
-                      disabled={index == 0 || isProcessing}
-                    />
-                  </span>
-                  <span className={style['button-wrap']}>
-                    <DownButton
-                      onClick={() => toieba.swapChoiceOrder(index, index + 1)}
-                      disabled={
-                        index == toieba.choices.length - 1 || isProcessing
-                      }
-                    />
-                  </span>
-                  <span className={style['delete-wrap']}>
-                    <DeleteButton
-                      onClick={() => toieba.deleteChoice(index)}
-                      disabled={isProcessing}
-                    />
-                  </span>
-                </div>
-              </SelectItem>
-            ))}
+            <TransitionGroup>
+              {toieba.choices.map(({ index, label }) => (
+                <Collapse
+                  in={true}
+                  key={label}
+                  className={style['select-item-wrap']}
+                >
+                  <SelectItem index={index} disabled={isProcessing}>
+                    <div className={style.text}>{label}</div>
+                    <div className={style.actions}>
+                      <span className={style['button-wrap']}>
+                        <UpButton
+                          onClick={() =>
+                            toieba.swapChoiceOrder(index, index - 1)
+                          }
+                          disabled={index == 0 || isProcessing}
+                        />
+                      </span>
+                      <span className={style['button-wrap']}>
+                        <DownButton
+                          onClick={() =>
+                            toieba.swapChoiceOrder(index, index + 1)
+                          }
+                          disabled={
+                            index == toieba.choices.length - 1 || isProcessing
+                          }
+                        />
+                      </span>
+                      <span className={style['delete-wrap']}>
+                        <DeleteButton
+                          onClick={() => toieba.deleteChoice(index)}
+                          disabled={isProcessing}
+                        />
+                      </span>
+                    </div>
+                  </SelectItem>
+                </Collapse>
+              ))}
+            </TransitionGroup>
           </SelectGroup>
 
           <ActionContainer>

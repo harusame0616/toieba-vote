@@ -33,6 +33,8 @@ export class FSToiebaRepository implements ToiebaRepository {
         })),
         createdAt: new Date(),
         voteCount: 0,
+        commentCount: 0,
+        popularityCount: 0,
       });
   }
 }

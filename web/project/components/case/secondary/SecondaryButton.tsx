@@ -1,9 +1,9 @@
-import Button, { ButtonProp } from '../../base/Button';
+import { Button } from '@mui/material';
 
-interface PrimaryButtonProp extends ButtonProp {}
+export interface Prop extends React.ComponentProps<typeof Button> {}
 
-const SecondaryButton = (prop: PrimaryButtonProp) => {
-  return <Button {...prop} outline background="#3a809c" />;
+const SecondaryButton = (prop: Prop) => {
+  return <Button {...prop} variant="outlined" />;
 };
 
 export default SecondaryButton;

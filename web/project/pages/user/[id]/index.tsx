@@ -1,6 +1,6 @@
+import { Button } from '@mui/material';
 import { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { NJAPIToiebaApi } from '../../../api/toieba-api/next-js-api-toieba-api';
@@ -10,6 +10,7 @@ import BackButton from '../../../components/case/back/BackButton';
 import ContentContainer from '../../../components/container/ContentContainer';
 import NaviContainer from '../../../components/container/NaviContainer';
 import SectionContainer from '../../../components/container/SectionContainer';
+import ToiebaListItem from '../../../components/domain/toieba/ToiebaListItem';
 import UserEditButton from '../../../components/domain/user/UserEditButton';
 import { ToiebaBriefDto } from '../../../domains/usecases/toieba-query-usecase';
 import { UserDto } from '../../../domains/usecases/user-query-usecase';
@@ -95,13 +96,16 @@ const UserPage: NextPage<ServerSideProps> = (props) => {
           <div className={style.list}>
             {answeredToiebaList.length ? (
               answeredToiebaList.map((toieba) => (
-                <div key={toieba.toiebaId}>
-                  <Link
-                    href={`/toieba/${toieba.toiebaId}/answer?answerUserId=${props.userId}`}
-                  >
-                    <a>{toieba.theme} といえば</a>
-                  </Link>
-                </div>
+                <Button
+                  key={toieba.toiebaId}
+                  onClick={() => {
+                    router.push(
+                      `/toieba/${toieba.toiebaId}/answer?answerUserId=${props.userId}`
+                    );
+                  }}
+                >
+                  <ToiebaListItem toieba={toieba} />
+                </Button>
               ))
             ) : (
               <div>まだ回答していません。</div>

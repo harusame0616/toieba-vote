@@ -1,3 +1,4 @@
+import { Box, Card } from '@mui/material';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import { GetServerSideProps, NextPage } from 'next';
@@ -173,7 +174,7 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
               }
             }}
           >
-            コメントする
+            コメントを書く
           </PrimaryButton>
         </ActionContainer>
         <ContantContainer>
@@ -213,7 +214,11 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
             </Dialog>
             {commentList.length
               ? commentList.map((comment) => (
-                  <div className={style.comment} key={comment.commentId}>
+                  <Card
+                    sx={{ boxShadow: 4 }}
+                    className={style.comment}
+                    key={comment.commentId}
+                  >
                     <div className={style['comment-header']}>
                       <div className={style.name}>
                         <Link href={`/user/${comment.userId}`}>
@@ -229,7 +234,12 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
                         </div>
                       </div>
                     </div>
-                    <div className={style['comment-body']}>{comment.text}</div>
+                    <Box
+                      className={style['comment-body']}
+                      sx={{ wordBreak: 'break-all' }}
+                    >
+                      {comment.text}
+                    </Box>
                     <div className={style['comment-footer']}>
                       <LikeButton
                         onLike={async () => {
@@ -246,7 +256,7 @@ const ToiebaTotal: NextPage<ServerSideProps> = (prop) => {
                         count={comment.likeCount}
                       />
                     </div>
-                  </div>
+                  </Card>
                 ))
               : 'まだコメントがありません。'}
           </div>
