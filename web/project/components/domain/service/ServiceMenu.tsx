@@ -37,7 +37,7 @@ const HeaderMenu = (prop: HeaderMenuProp) => {
 
   return (
     <Slide appear={false} direction="down" in={!trigger}>
-      <AppBar className={style.header}>
+      <AppBar className={style.header} style={{ background: '#fafafa' }}>
         <Toolbar>
           <div className={style.logo}>
             <div className={style['logo-wrap']}>
