@@ -57,6 +57,7 @@ export class FSAnswerRepository implements AnswerRepository {
 
         transaction.update(toiebaDoc, {
           voteCount: (toiebaDto.voteCount as number) + 1,
+          popularityCount: (toiebaDto.popularityCount as number) + 1,
         });
       }
 

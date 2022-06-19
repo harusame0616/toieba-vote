@@ -33,6 +33,9 @@ export class FSToiebaQuery implements ToiebaQuery {
       return {
         toiebaId: doc.id,
         theme: toieba.theme,
+        postedAt: toieba.createdAt.toDate().toUTCString(),
+        voteCount: toieba.voteCount,
+        commentCount: toieba.commentCount,
       };
     });
   }
@@ -40,7 +43,7 @@ export class FSToiebaQuery implements ToiebaQuery {
   async popularList(count: number): Promise<ToiebaBriefDto[]> {
     const snapShot = await fsDb
       .collection('toieba')
-      .orderBy('voteCount', 'desc')
+      .orderBy('popularityCount', 'desc')
       .limit(count)
       .get();
 
@@ -49,6 +52,9 @@ export class FSToiebaQuery implements ToiebaQuery {
       return {
         toiebaId: doc.id,
         theme: toieba.theme,
+        postedAt: toieba.createdAt.toDate().toUTCString(),
+        voteCount: toieba.voteCount,
+        commentCount: toieba.commentCount,
       };
     });
   }
@@ -74,9 +80,16 @@ export class FSToiebaQuery implements ToiebaQuery {
       .where(admin.firestore.FieldPath.documentId(), 'in', answeredToiebaIds)
       .get();
 
-    return toiebaSnapshots.docs.map((doc) => ({
-      toiebaId: doc.id,
-      theme: doc.data().theme,
-    }));
+    return toiebaSnapshots.docs.map((doc) => {
+      const toieba = doc.data();
+
+      return {
+        toiebaId: doc.id,
+        theme: toieba.theme,
+        postedAt: toieba.createdAt.toDate().toUTCString(),
+        voteCount: toieba.voteCount,
+        commentCount: toieba.commentCount,
+      };
+    });
   }
 }
