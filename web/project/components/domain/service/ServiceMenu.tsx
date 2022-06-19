@@ -3,6 +3,7 @@ import {
   AppBar,
   Avatar,
   Collapse,
+  IconButton,
   Slide,
   Toolbar,
   useScrollTrigger,
@@ -50,15 +51,20 @@ const HeaderMenu = (prop: HeaderMenuProp) => {
             </SecondaryButton>
             {prop.user.userId ? (
               <div className={style['user-wrap']}>
-                <Avatar
-                  sx={{ backgroundColor: theme?.palette?.primary?.main }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prop.menuState[1](true);
-                  }}
-                >
-                  {prop.user.name[0]}
-                </Avatar>
+                <IconButton>
+                  <Avatar
+                    sx={{
+                      backgroundColor: theme?.palette?.primary?.main,
+                      cursor: 'pointer',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prop.menuState[1](true);
+                    }}
+                  >
+                    {prop.user.name[0]}
+                  </Avatar>
+                </IconButton>
                 <div className={style['menu-wrap']}>
                   <Collapse in={prop.menuState[0]}>
                     <UserMenu userId={prop.user.userId} />

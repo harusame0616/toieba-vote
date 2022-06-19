@@ -1,4 +1,4 @@
-import { Collapse } from '@mui/material';
+import { Box, Collapse, Input } from '@mui/material';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -11,7 +11,8 @@ import BackButton from '../../components/case/back/BackButton';
 import DeleteButton from '../../components/case/delete/DeleteButton';
 import DownButton from '../../components/case/down/DownButton';
 import ErrorMessage from '../../components/case/error/ErrorMessage';
-import PrimaryButton from '../../components/case/primary/PrimaryButton'; import UpButton from '../../components/case/up/UpButton';
+import PrimaryButton from '../../components/case/primary/PrimaryButton';
+import UpButton from '../../components/case/up/UpButton';
 import ActionContainer from '../../components/container/ActionContainer';
 import ContentContainer from '../../components/container/ContentContainer';
 import NaviContainer from '../../components/container/NaviContainer';
@@ -82,7 +83,7 @@ const CreateTheme: NextPage = () => {
       <SectionContainer>
         <ToiebaBand>
           <div className={style['theme-input']}>
-            <input
+            <Input
               disabled={isProcessing}
               type="text"
               onChange={(e) => setThemeTmp(e.target.value)}
@@ -91,6 +92,7 @@ const CreateTheme: NextPage = () => {
               ref={themeInputRef}
               style={{ color: 'black' }}
               placeholder="例：おにぎりの具"
+              sx={{ color: 'white' }}
             />
             <ErrorMessage>{themeErrorMessage}</ErrorMessage>
           </div>
@@ -101,21 +103,24 @@ const CreateTheme: NextPage = () => {
         <ContentContainer>
           <SelectGroup>
             選択肢
-            <div className={style['choice-input']}>
-              <input
-                ref={choiceInputRef}
-                disabled={!toieba.canAddChoice || isProcessing}
-                onChange={(e) => setNewChoiceLabel(e.target.value)}
-                value={newChoiceLabel}
-                placeholder="例：しゃけ"
-              />
-              <div className={style['add-wrap']}>
+            <Box display="flex">
+              <Box flexGrow={1}>
+                <Input
+                  ref={choiceInputRef}
+                  disabled={!toieba.canAddChoice || isProcessing}
+                  onChange={(e) => setNewChoiceLabel(e.target.value)}
+                  value={newChoiceLabel}
+                  placeholder="例：しゃけ"
+                  fullWidth
+                />
+              </Box>
+              <Box flexGrow={0} flexShrink={0} display="flex">
                 <AddButton
                   disabled={!toieba.canAddChoice || isProcessing}
                   onClick={addChoiceHandler}
                 />
-              </div>
-            </div>
+              </Box>
+            </Box>
             <ErrorMessage>{addChoiceErrorMessage}</ErrorMessage>
             <TransitionGroup>
               {toieba.choices.map(({ index, label }) => (

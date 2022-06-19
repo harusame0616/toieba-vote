@@ -1,3 +1,4 @@
+import { Input, TextField } from '@mui/material';
 import { FormEvent, ReactNode } from 'react';
 import { UserProfile } from '../../../api/user-api';
 import useUserEdit from '../../../hooks/user/use-user-edit';
@@ -30,10 +31,9 @@ const UserEditForm = (props: Props) => {
       <div className={style.item}>
         <div className={style.label}>名前</div>
         <div className={style.control}>
-          <input
+          <Input
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className={style.control}
             disabled={props.isLoading}
           />
           <ErrorMessage>{error.nameError}</ErrorMessage>
@@ -42,10 +42,10 @@ const UserEditForm = (props: Props) => {
       <div className={style.item}>
         <div className={style.label}>コメント</div>
         <div className={style.control}>
-          <textarea
+          <TextField
+            multiline
             value={comment}
             onChange={(event) => setComment(event.target.value)}
-            className={style.control}
             rows={5}
             disabled={props.isLoading}
           />
