@@ -5,7 +5,7 @@ import { CommentDto, CommentQuery } from '../../usecases/comment-query-usecase';
 export const fsDb = admin.app('toieba').firestore();
 
 export class FSCommentQuery implements CommentQuery {
-  async queryCommentListByToiebaId(toiebaId: string, userId?: string) {
+  async queryCommentListByToiebaId(toiebaId: string) {
     const commentDocs = await fsDb
       .collection('toieba')
       .doc(toiebaId)

@@ -37,14 +37,22 @@ export default async function handler(
       );
     },
     GET: async () => {
-      const { latest, popular, answered, userId } = req.query;
+      const { latest, popular, answered, userId, cursor } = req.query;
+
+      if (cursor && typeof cursor !== 'string') {
+        throw new ParameterError();
+      }
 
       let list: ToiebaBriefDto[] = [];
       if (latest) {
-        list = await toiebaQueryUsecase.latestList(parseInt(latest as string));
+        list = await toiebaQueryUsecase.latestList(
+          parseInt(latest as string),
+          cursor
+        );
       } else if (popular) {
         list = await toiebaQueryUsecase.popularList(
-          parseInt(popular as string)
+          parseInt(popular as string),
+          cursor
         );
       } else if (answered && typeof answered === 'string') {
         if (!userId || typeof userId !== 'string') {
@@ -54,6 +62,7 @@ export default async function handler(
         list = await toiebaQueryUsecase.listOfAnsweredByUser({
           count: parseInt(answered),
           userId,
+          cursor,
         });
       } else {
         // do nothing

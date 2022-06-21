@@ -20,12 +20,13 @@ export interface ToiebaBriefDto {
 export interface AnsweredByUserParam {
   userId: string;
   count: number;
+  cursor?: string;
 }
 
 export interface ToiebaQuery {
   getDetail(toiebaId: string): Promise<ToiebaDto>;
-  latestList(count: number): Promise<ToiebaBriefDto[]>;
-  popularList(count: number): Promise<ToiebaBriefDto[]>;
+  latestList(count: number, cursor?: string): Promise<ToiebaBriefDto[]>;
+  popularList(count: number, cursor?: string): Promise<ToiebaBriefDto[]>;
   listOfAnsweredByUser(param: AnsweredByUserParam): Promise<ToiebaBriefDto[]>;
 }
 
@@ -40,12 +41,12 @@ export class ToiebaQueryUsecase {
     return await this.param.toiebaQuery.getDetail(id);
   }
 
-  async latestList(count: number) {
-    return await this.param.toiebaQuery.latestList(count);
+  async latestList(count: number, cursor?: string) {
+    return await this.param.toiebaQuery.latestList(count, cursor);
   }
 
-  async popularList(count: number) {
-    return await this.param.toiebaQuery.popularList(count);
+  async popularList(count: number, cursor?: string) {
+    return await this.param.toiebaQuery.popularList(count, cursor);
   }
 
   async listOfAnsweredByUser(param: AnsweredByUserParam) {

@@ -30,9 +30,8 @@ export class FSAnswerRepository implements AnswerRepository {
     userId,
   }: FindByUserIdParam): Promise<Answer | undefined> {
     const snapshot = await fsDb
-      .collection('toieba')
-      .doc(toiebaId)
       .collection('answers')
+      .where('toiebaId', '==', toiebaId)
       .where('userId', '==', userId)
       .get();
 
@@ -45,7 +44,7 @@ export class FSAnswerRepository implements AnswerRepository {
   async save(answer: Answer): Promise<void> {
     await fsDb.runTransaction(async (transaction) => {
       const toiebaDoc = fsDb.collection('toieba').doc(answer.toiebaId);
-      const answerDoc = toiebaDoc.collection('answers').doc(answer.answerId);
+      const answerDoc = fsDb.collection('answers').doc(answer.answerId);
 
       const answerSnapShot = await answerDoc.get();
       if (!answerSnapShot.exists) {
@@ -66,6 +65,7 @@ export class FSAnswerRepository implements AnswerRepository {
         answerId: answer.answerId,
         choiceId: answer.choiceId,
         userId: answer.userId,
+        answeredAt: new Date(),
       });
     });
   }

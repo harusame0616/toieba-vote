@@ -21,14 +21,25 @@ export class FSToiebaQuery implements ToiebaQuery {
     return { ...data, toiebaId: snapShot.id } as ToiebaDto;
   }
 
-  async latestList(count: number): Promise<ToiebaBriefDto[]> {
-    const snapShot = await fsDb
-      .collection('toieba')
-      .orderBy('createdAt', 'desc')
-      .limit(count)
-      .get();
+  async latestList(count: number, cursor?: string): Promise<ToiebaBriefDto[]> {
+    const cursorSnapshot = cursor
+      ? await fsDb.collection('toieba').doc(cursor).get()
+      : null;
 
-    return snapShot.docs.map((doc: any) => {
+    const snapshot = await (cursorSnapshot
+      ? fsDb
+          .collection('toieba')
+          .orderBy('createdAt', 'desc')
+          .startAfter(cursorSnapshot)
+          .limit(count)
+          .get()
+      : fsDb
+          .collection('toieba')
+          .orderBy('createdAt', 'desc')
+          .limit(count)
+          .get());
+
+    return snapshot.docs.map((doc: any) => {
       const toieba = doc.data();
       return {
         toiebaId: doc.id,
@@ -40,14 +51,25 @@ export class FSToiebaQuery implements ToiebaQuery {
     });
   }
 
-  async popularList(count: number): Promise<ToiebaBriefDto[]> {
-    const snapShot = await fsDb
-      .collection('toieba')
-      .orderBy('popularityCount', 'desc')
-      .limit(count)
-      .get();
+  async popularList(count: number, cursor?: string): Promise<ToiebaBriefDto[]> {
+    const cursorSnapshot = cursor
+      ? await fsDb.collection('toieba').doc(cursor).get()
+      : null;
 
-    return snapShot.docs.map((doc: any) => {
+    const snapshot = await (cursorSnapshot
+      ? fsDb
+          .collection('toieba')
+          .orderBy('popularityCount', 'desc')
+          .startAfter(cursorSnapshot)
+          .limit(count)
+          .get()
+      : fsDb
+          .collection('toieba')
+          .orderBy('popularityCount', 'desc')
+          .limit(count)
+          .get());
+
+    return snapshot.docs.map((doc: any) => {
       const toieba = doc.data();
       return {
         toiebaId: doc.id,
@@ -62,15 +84,35 @@ export class FSToiebaQuery implements ToiebaQuery {
   async listOfAnsweredByUser({
     userId,
     count,
+    cursor,
   }: AnsweredByUserParam): Promise<ToiebaBriefDto[]> {
-    const answerSnapshots = await fsDb
-      .collectionGroup('answers')
-      .where('userId', '==', userId)
-      .get();
+    const cursorSnapshot = cursor
+      ? await fsDb
+          .collection('answers')
+          .where('toiebaId', '==', cursor)
+          .where('userId', '==', userId)
+          .get()
+      : null;
+
+    const answerSnapshots = await (cursorSnapshot
+      ? fsDb
+          .collection('answers')
+          .where('userId', '==', userId)
+          .orderBy('answeredAt', 'desc')
+          .startAfter(cursorSnapshot.docs[0])
+          .limit(count)
+          .get()
+      : fsDb
+          .collection('answers')
+          .where('userId', '==', userId)
+          .orderBy('answeredAt', 'desc')
+          .limit(count)
+          .get());
 
     const answeredToiebaIds = answerSnapshots.docs.map(
       (answer) => answer.data().toiebaId
     );
+
     if (!answeredToiebaIds.length) {
       return [];
     }
@@ -80,16 +122,24 @@ export class FSToiebaQuery implements ToiebaQuery {
       .where(admin.firestore.FieldPath.documentId(), 'in', answeredToiebaIds)
       .get();
 
-    return toiebaSnapshots.docs.map((doc) => {
-      const toieba = doc.data();
+    const toiebaMap = Object.fromEntries(
+      toiebaSnapshots.docs.map((doc) => {
+        const toieba = doc.data();
 
-      return {
-        toiebaId: doc.id,
-        theme: toieba.theme,
-        postedAt: toieba.createdAt.toDate().toUTCString(),
-        voteCount: toieba.voteCount,
-        commentCount: toieba.commentCount,
-      };
-    });
+        return [
+          doc.id,
+          {
+            toiebaId: doc.id,
+            theme: toieba.theme,
+            postedAt: toieba.createdAt.toDate().toUTCString(),
+            voteCount: toieba.voteCount,
+            commentCount: toieba.commentCount,
+          },
+        ];
+      })
+    );
+
+    // orderByの順番にソートし直して返却
+    return answeredToiebaIds.map((id) => toiebaMap[id]);
   }
 }

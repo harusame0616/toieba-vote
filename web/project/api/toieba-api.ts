@@ -17,13 +17,14 @@ export interface ToiebaAnswerApiParam {
 
 export interface ToiebaGetAnsweredApiParam {
   userId: string;
+  cursor?: string;
 }
 
 export interface ToiebaApi {
   create(param: ToiebaCreateApiParam): Promise<{ toiebaId: string }>;
   answer(param: ToiebaAnswerApiParam): Promise<{ answerId: string }>;
   getDetail(param: { id: string }): Promise<ToiebaDto>;
-  getLatest(): Promise<ToiebaBriefDto[]>;
-  getPopular(): Promise<ToiebaBriefDto[]>;
+  getLatest(cursor?: string): Promise<ToiebaBriefDto[]>;
+  getPopular(cursor?: string): Promise<ToiebaBriefDto[]>;
   getAnswered(param: ToiebaGetAnsweredApiParam): Promise<ToiebaBriefDto[]>;
 }
