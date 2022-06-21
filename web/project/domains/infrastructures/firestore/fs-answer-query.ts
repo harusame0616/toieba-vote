@@ -15,9 +15,8 @@ export class FSAnswerQuery implements AnswerQuery {
   ): Promise<AnswerDto | null> {
     const [answersSnapshot, toiebaSnapshot, userSnapshot] = await Promise.all([
       fsDb
-        .collection('toieba')
-        .doc(param.toiebaId)
         .collection('answers')
+        .where('toiebaId', '==', param.toiebaId)
         .where('userId', '==', param.answerUserId)
         .get(),
       fsDb.collection('toieba').doc(param.toiebaId).get(),
@@ -45,7 +44,7 @@ export class FSAnswerQuery implements AnswerQuery {
   async total({ toiebaId }: TotalParam): Promise<TotalDto | null> {
     const [toiebaSnapshot, answersSnapshot] = await Promise.all([
       fsDb.collection('toieba').doc(toiebaId).get(),
-      fsDb.collection('toieba').doc(toiebaId).collection('answers').get(),
+      fsDb.collection('answers').where('toiebaId', '==', toiebaId).get(),
     ]);
 
     const toieba = toiebaSnapshot.data();

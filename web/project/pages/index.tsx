@@ -1,58 +1,80 @@
 import { faClock, faTrophy } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Tab, Tabs } from '@mui/material';
+import { Button, CircularProgress, Slide, Tab, Tabs } from '@mui/material';
 import type { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { NJAPIToiebaApi } from '../api/toieba-api/next-js-api-toieba-api';
 import Band from '../components/base/Band';
+import SecondaryButton from '../components/case/secondary/SecondaryButton';
 import ContentContainer from '../components/container/ContentContainer';
+import NaviContainer from '../components/container/NaviContainer';
 import SectionContainer from '../components/container/SectionContainer';
 import ToiebaListItem from '../components/domain/toieba/ToiebaListItem';
 import { ToiebaBriefDto } from '../domains/usecases/toieba-query-usecase';
+import useProcessing from '../hooks/use-processing';
 import style from './index.module.scss';
 
 interface ServerSideProps {
   latest: ToiebaBriefDto[];
-  popular: ToiebaBriefDto[];
 }
 
 const api = new NJAPIToiebaApi();
 export const getServerSideProps: GetServerSideProps<
   ServerSideProps
 > = async () => {
-  const [latest, popular] = await Promise.all([
-    api.getLatest(),
-    api.getPopular(),
-  ]);
+  const [latest] = await Promise.all([api.getLatest()]);
 
   return {
     props: {
       latest,
-      popular,
     },
   };
 };
 
 const Home: NextPage<ServerSideProps> = (props) => {
   const router = useRouter();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentTabIndex, setCurrentTabIndex] = useState(0);
+  const [toiebaList, setToiebaList] = useState(props.latest);
+  const [isLast, setIsLast] = useState(props.latest.length < 5);
+  const { isProcessing, startProcessing } = useProcessing();
 
+  const toiebaApi = new NJAPIToiebaApi();
   const menu = [
     {
       label: '新着',
-      list: props.latest,
+      api: toiebaApi.getLatest,
       icon: <FontAwesomeIcon icon={faClock} />,
     },
     {
       label: '人気',
-      list: props.popular,
+      api: toiebaApi.getPopular,
       icon: <FontAwesomeIcon icon={faTrophy} />,
     },
   ];
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setCurrentIndex(newValue);
+  const changeTab = async (newTabIndex: number) => {
+    setCurrentTabIndex(newTabIndex);
+    setIsLast(false);
+
+    const api = menu.map(({ api }) => api)[newTabIndex];
+
+    setToiebaList([]);
+    await startProcessing(async () => {
+      const list = await api();
+      setToiebaList(list);
+      setIsLast(list.length < 5);
+    });
+  };
+
+  const nextPage = async () => {
+    const api = menu.map(({ api }) => api)[currentTabIndex];
+
+    await startProcessing(async () => {
+      const nextList = await api(toiebaList.slice(-1)?.[0]?.toiebaId);
+      setToiebaList([...toiebaList, ...nextList]);
+      setIsLast(nextList.length < 5);
+    });
   };
 
   const goToToieba = (id: string) => {
@@ -61,16 +83,27 @@ const Home: NextPage<ServerSideProps> = (props) => {
 
   return (
     <div className={style.container}>
-      <Tabs value={currentIndex} onChange={handleChange} centered>
+      <Tabs
+        value={currentTabIndex}
+        onChange={(e, newTabIndex) => changeTab(newTabIndex)}
+        centered
+      >
         {menu.map((item) => (
-          <Tab label={item.label} key={item.label} icon={item.icon} />
+          <Tab
+            label={item.label}
+            key={item.label}
+            icon={item.icon}
+            disabled={isProcessing}
+          />
         ))}
       </Tabs>
-      <SectionContainer key={menu[currentIndex].label}>
-        <Band key={menu[currentIndex].label}>{menu[currentIndex].label}</Band>
+      <SectionContainer key={menu[currentTabIndex].label}>
+        <Band key={menu[currentTabIndex].label}>
+          {menu[currentTabIndex].label}
+        </Band>
         <ContentContainer>
           <div className={style['item-wrap']}>
-            {menu[currentIndex].list.map((toieba) => (
+            {toiebaList.map((toieba) => (
               <Button
                 key={toieba.toiebaId}
                 className={style['item']}
@@ -83,6 +116,19 @@ const Home: NextPage<ServerSideProps> = (props) => {
             ))}
           </div>
         </ContentContainer>
+        <NaviContainer>
+          <SecondaryButton
+            disabled={isLast || isProcessing}
+            fullWidth
+            onClick={() => nextPage()}
+          >
+            {isProcessing ? (
+              <CircularProgress />
+            ) : (
+              <div>{isLast ? '最後に到達しました' : 'もっと見る'}</div>
+            )}
+          </SecondaryButton>
+        </NaviContainer>
       </SectionContainer>
     </div>
   );

@@ -35,23 +35,35 @@ export class NJAPIToiebaApi implements ToiebaApi {
     return res.data;
   }
 
-  async getLatest(): Promise<ToiebaBriefDto[]> {
-    const res = await http.get(`/api/toiebas?latest=5`);
+  async getLatest(cursor?: string): Promise<ToiebaBriefDto[]> {
+    const res = await http.get(`/api/toiebas`, {
+      params: {
+        latest: 5,
+        cursor,
+      },
+    });
     return res.data;
   }
 
-  async getPopular(): Promise<ToiebaBriefDto[]> {
-    const res = await http.get(`/api/toiebas?popular=5`);
+  async getPopular(cursor?: string): Promise<ToiebaBriefDto[]> {
+    const res = await http.get(`/api/toiebas`, {
+      params: {
+        popular: 5,
+        cursor,
+      },
+    });
     return res.data;
   }
 
   async getAnswered({
     userId,
+    cursor,
   }: ToiebaGetAnsweredApiParam): Promise<ToiebaBriefDto[]> {
     const res = await http.get(`/api/toiebas`, {
       params: {
         userId,
         answered: 5,
+        cursor,
       },
     });
     return res.data;
